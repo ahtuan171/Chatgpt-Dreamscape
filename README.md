@@ -15,7 +15,7 @@
 
 ### 🎬 Video demo
 
-[Xem video giới thiệu ChatGPT Dreamscape](demo-1.mp4).
+https://github.com/user-attachments/assets/d36dd9cb-3e7d-43aa-8e5c-052b8fc89211
 
 ### 🖼️ Thư viện hình nền
 
@@ -105,7 +105,7 @@ Mã nguồn ở [`src/`](src/), ảnh ở [`assets/`](assets/), bộ công cụ 
 
 ### 🎬 Demo video
 
-[Watch the ChatGPT Dreamscape demo](demo-1.mp4).
+https://github.com/user-attachments/assets/d36dd9cb-3e7d-43aa-8e5c-052b8fc89211
 
 ### 🖼️ Built-in wallpapers
 
