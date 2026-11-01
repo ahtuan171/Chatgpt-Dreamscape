@@ -153,13 +153,37 @@ html.ds-active .ds-composer textarea {
 #dreamscape-app .ds-separator {height: 1px;background: #ffffff20;margin-top: 15px;}
 #dreamscape-app .ds-panel small {display: block;line-height: 1.5;opacity: .65;margin-top: 14px;}
 #dreamscape-app .ds-status {font-size: 12px;line-height: 1.5;color: #f2d8a3;margin: 10px 0;}
+/* Victor is an accessible button: clicking / Enter / Space gives him a little hop. */
 #ds-victor {
   position: fixed;width: 74px;height: 59px;image-rendering: pixelated;
-  pointer-events: none;z-index: 2147482999;
+  display:block;margin:0;padding:0;border:0;background:transparent;
+  pointer-events: auto;cursor:pointer;z-index: 2147482999;
   filter: drop-shadow(0 2px 2px #0008);
+  -webkit-tap-highlight-color: transparent;
 }
-#ds-victor canvas {width:100%;height:100%;display:block;image-rendering:pixelated;}
-@media (prefers-reduced-motion: reduce){#ds-victor {transition: none !important;}}
+#ds-victor canvas {width:100%;height:100%;display:block;image-rendering:pixelated;pointer-events:none;}
+#ds-victor:focus-visible {outline:2px solid #e9d3a0;outline-offset:2px;border-radius:8px;}
+#ds-victor .ds-victor-heart {
+  position:absolute;top:-13px;right:4px;color:#ff9cae;font-size:19px;
+  text-shadow:0 2px 5px #000b;opacity:0;pointer-events:none;
+}
+#ds-victor.ds-petted canvas {animation:ds-victor-hop 700ms ease-out both;}
+#ds-victor.ds-petted .ds-victor-heart {animation:ds-victor-heart 800ms ease-out both;}
+@keyframes ds-victor-hop {
+  0%,100% {transform:translateY(0)}
+  39% {transform:translateY(-13px)}
+  65% {transform:translateY(-5px)}
+}
+@keyframes ds-victor-heart {
+  0% {opacity:0;transform:translateY(5px) scale(.7)}
+  22%,65% {opacity:1}
+  100% {opacity:0;transform:translateY(-15px) scale(1.08)}
+}
+@media (prefers-reduced-motion: reduce) {
+  #ds-victor {transition:none !important;}
+  #ds-victor.ds-petted canvas {animation:none;}
+  #ds-victor.ds-petted .ds-victor-heart {animation:none;opacity:1;}
+}
 
 #dreamscape-app .ds-wall-preview {height:116px;width:100%;margin:11px 0 15px;border-radius:10px;border:1px solid #ffffff23;background-color:#0a1120;background-position:center;background-size:cover;}
 #dreamscape-app .ds-hint {display:block;color:#bcc7d7;font-size:11px;line-height:1.35;margin:5px 0 12px;}
