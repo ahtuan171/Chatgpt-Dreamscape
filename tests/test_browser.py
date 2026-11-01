@@ -68,7 +68,9 @@ def run_tests(page, real_storage):
     victor_box=page.locator('#ds-victor').bounding_box()
     composer_box=page.locator('[data-testid="composer-root"]').bounding_box()
     assert victor_box['y'] < composer_box['y']
-    assert composer_box['x']+composer_box['width']*.82 <= victor_box['x'] <= composer_box['x']+composer_box['width']
+    effort_box=page.locator('.effort-control span').bounding_box()
+    assert abs(victor_box['x']+victor_box['width']/2 - (effort_box['x']+effort_box['width']/2)) <= 4, (victor_box, effort_box)
+    assert page.locator('#ds-victor').get_attribute('data-anchor') == 'effort' 
     assert page.locator('#ds-victor').count() == 1
     # Victor begins facing left and patrols toward the center from the upper-right corner.
     assert page.locator('#ds-victor').get_attribute('data-facing') == 'left'
@@ -76,7 +78,7 @@ def run_tests(page, real_storage):
     page.wait_for_timeout(6800)
     moved_box=page.locator('#ds-victor').bounding_box()
     assert moved_box['x'] < victor_box['x'] - 4, (moved_box,victor_box)
-    assert moved_box['x'] >= composer_box['x'] + composer_box['width']*.65
+    assert moved_box['x'] >= composer_box['x'] + composer_box['width']*.5
     assert page.locator('#ds-victor').get_attribute('data-facing') == 'left'
     # Turn at the far edge, then walk back facing right, not moonwalk.
     page.wait_for_function("document.getElementById('ds-victor')?.dataset.facing==='right'",timeout=7000)
@@ -188,7 +190,85 @@ def run_tests(page, real_storage):
     page.wait_for_timeout(250)
     assert page.locator('article h1').is_visible()
     assert not errors, errors
-    print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 3 themes, Victor 15%-larger right-side facing changes, visible persisted checkboxes, translucent composer and dock, dim, position, upload, save, delete, fallback and resize")
+    print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 3 themes, Victor over effort control with facing changes, visible persisted checkboxes, translucent composer and dock, dim, position, upload, save, delete, fallback and resize")
+
+
+def test_victor_interaction(browser, url, use_mock_storage):
+    """Victor should perch over the effort control and respond to clicks and keyboard."""
+    page = browser.new_page(viewport={'width':1600,'height':900}, reduced_motion='no-preference')
+    errors = []
+    page.on('pageerror', lambda e: errors.append(str(e)))
+    if use_mock_storage:
+        page.set_content(FIXTURE)
+        page.evaluate(STORAGE_SHIM)
+    else:
+        page.goto(url)
+    page.add_script_tag(content=SCRIPT)
+    page.wait_for_function("() => document.querySelector('#ds-victor')?.dataset.anchor==='effort'")
+    rect=page.locator('#ds-victor').bounding_box()
+    effort=page.locator('.effort-control span').bounding_box()
+    composer=page.locator('form').bounding_box()
+    assert abs(rect['x']+rect['width']/2-effort['x']-effort['width']/2)<5, (rect,effort)
+    assert rect['y']+rect['height'] <= composer['y']+12
+    assert page.locator('#ds-victor').evaluate('e=>e.tagName')=='BUTTON'
+    assert page.locator('#ds-victor').get_attribute('aria-label')=='Pet Victor the pixel cat'
+    assert page.locator('#ds-victor').evaluate('e=>getComputedStyle(e).pointerEvents')=='auto'
+
+    # The hitbox itself is clickable, not just a decorative overlay.
+    page.locator('#ds-victor').click()
+    assert page.locator('#ds-victor').get_attribute('data-reaction')=='petted'
+    page.wait_for_timeout(250)
+    assert page.locator('.ds-victor-heart').evaluate('e=>getComputedStyle(e).opacity')!='0'
+    assert page.locator('#ds-victor canvas').evaluate('e=>getComputedStyle(e).animationName')=='ds-victor-hop'
+    folder=ROOT/'tests/screenshots'
+    folder.mkdir(exist_ok=True)
+    page.screenshot(path=str(folder/'victor-click.png'))
+    page.wait_for_function("() => document.querySelector('#ds-victor')?.dataset.reaction==='idle'")
+    # Keyboard users should get the same response (native button behavior).
+    page.locator('#ds-victor').focus()
+    page.keyboard.press('Enter')
+    assert page.locator('#ds-victor').get_attribute('data-reaction')=='petted'
+    page.wait_for_timeout(900)
+
+    # Effort selector can shift as the composer grows (attachments, multiline input).
+    page.locator('form').evaluate('e=>e.style.minHeight="228px"')
+    page.locator('.effort-control').evaluate('e=>e.style.transform="translateX(-35px)"')
+    page.wait_for_timeout(300)
+    grown_cat=page.locator('#ds-victor').bounding_box()
+    grown_label=page.locator('.effort-control span').bounding_box()
+    grown_composer=page.locator('form').bounding_box()
+    assert abs(grown_cat['x']+grown_cat['width']/2-grown_label['x']-grown_label['width']/2)<5
+    assert grown_cat['y']+grown_cat['height']<=grown_composer['y']+12
+
+    # If effort changes, Victor tracks its location without modifying composer controls.
+    page.locator('.effort-control span').evaluate("e=>e.textContent='Medium'")
+    page.wait_for_timeout(250)
+    assert page.locator('#ds-victor').get_attribute('data-anchor')=='effort'
+    page.locator('.effort-control').evaluate("e=>e.remove()")
+    page.wait_for_timeout(250)
+    assert page.locator('#ds-victor').get_attribute('data-anchor')=='fallback'
+    assert page.locator('#ds-victor').is_visible()
+    page.locator('#prompt-textarea').click()
+    page.keyboard.type('Hello Victor')
+    assert 'Hello Victor' in page.locator('#prompt-textarea').inner_text()
+    assert not errors,errors
+    page.close()
+
+    # Respect OS reduced-motion setting; petting should still acknowledge a click.
+    page=browser.new_page(viewport={'width':1600,'height':900}, reduced_motion='reduce')
+    if use_mock_storage:
+        page.set_content(FIXTURE)
+        page.evaluate(STORAGE_SHIM)
+    else:
+        page.goto(url)
+    page.add_script_tag(content=SCRIPT)
+    page.wait_for_function("() => document.querySelector('#ds-victor')?.dataset.anchor==='effort'")
+    page.locator('#ds-victor').click()
+    assert page.locator('#ds-victor').get_attribute('data-reaction')=='petted'
+    assert page.locator('#ds-victor canvas').evaluate('e=>getComputedStyle(e).animationName')=='none'
+    assert page.locator('.ds-victor-heart').evaluate('e=>getComputedStyle(e).opacity')=='1'
+    page.close()
+    print('PASS: Victor sits above High, follows effort label, falls back safely, click/keyboard pet with reduced-motion support')
 
 def test_existing_selection_migration(browser, url, use_mock_storage):
     """Retired themes fall back, while saved custom wallpapers remain selected."""
@@ -327,6 +407,7 @@ with Server(('127.0.0.1', 0), Handler) as server:
             page.set_content(FIXTURE)
             page.evaluate(STORAGE_SHIM)
             print('NOTE: browser navigation restricted; using about:blank fixture with simulated storage. Native IndexedDB must be tested in CI.')
+        test_victor_interaction(browser, url, not real_storage)
         run_tests(page, real_storage)
         test_existing_selection_migration(browser, url, not real_storage)
         test_attachment_dock_reparent(browser, url, not real_storage)
