@@ -8,7 +8,7 @@ Dreamscape currently bundles **five original wallpapers** and **Victor**, the gr
 | Midnight Tulips | Original AI-assisted illustration created for this project |
 | Prince & Princess | Original AI-assisted moonlit romantic silhouette made for this project |
 | Arcane Library | Original AI-assisted pixel-art fantasy library made for this project |
-| The Silent King | Original AI-assisted cinematic monochrome chess wallpaper made for this project |
+| The Silent King | Original AI-assisted chess artwork refreshed in v0.3.6, with right-aligned pieces and extra space for chat text |
 
 The other eight previously bundled wallpapers, including Moonlit Village, have been removed from the public collection. The procedural wallpaper generator has also been removed to avoid recreating retired art.
 

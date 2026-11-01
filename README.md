@@ -11,21 +11,23 @@
 
 **ChatGPT Dreamscape** là một userscript mã nguồn mở giúp bạn tùy chỉnh giao diện ChatGPT trên **trình duyệt máy tính** bằng những hình nền giàu cảm xúc và một người bạn pixel nhỏ tên **Victor**.
 
-> **Bản xem trước v0.3.5.** Đây là dự án cộng đồng độc lập, không phải tính năng chính thức của OpenAI. Giao diện ChatGPT có thể thay đổi và ảnh hưởng đến userscript; nếu phát hiện lỗi, hãy [tạo issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues).
+> **Bản xem trước v0.3.6.** Đây là dự án cộng đồng độc lập, không phải tính năng chính thức của OpenAI. Giao diện ChatGPT có thể thay đổi và ảnh hưởng đến userscript; nếu phát hiện lỗi, hãy [tạo issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues).
 
 ### 🖼️ Thư viện hình nền
 
-Năm hình nền gốc đang được tích hợp sẵn. Bạn cũng có thể thêm hình nền của riêng mình.
+Bộ sưu tập có **5 hình nền gốc** với không khí riêng và vùng chữ dễ đọc.
 
-| Moonlit Castle | Midnight Tulips | Prince & Princess |
-| :---: | :---: | :---: |
-| <img src="assets/wallpapers/moonlit-castle.webp" alt="Lâu đài dưới ánh trăng — Moonlit Castle" width="260"> | <img src="assets/wallpapers/midnight-tulips.webp" alt="Hoa tulip trong đêm — Midnight Tulips" width="260"> | <img src="assets/wallpapers/moonlit-romance.webp" alt="Hoàng tử và công chúa dưới trăng — Prince & Princess" width="260"> |
+![Năm hình nền ChatGPT Dreamscape](docs/images/wallpaper-gallery-v036.png)
 
-| Arcane Library | The Silent King |
-| :---: | :---: |
-| <img src="assets/wallpapers/arcane-library.webp" alt="Thư viện phép thuật phong cách pixel art — Arcane Library" width="390"> | <img src="assets/wallpapers/silent-king.webp" alt="Quân vua cờ vua trắng giữa bóng tối — The Silent King" width="390"> |
+| Hình nền | Xem trước | Phong cách | Độ dễ đọc |
+| --- | --- | --- | --- |
+| **Moonlit Castle** | <img src="assets/wallpapers/moonlit-castle.webp" alt="Moonlit Castle" width="190"> | Thần thoại dưới trăng | Lâu đài ở xa, nền trời tối giúp chữ dễ đọc |
+| **Midnight Tulips** | <img src="assets/wallpapers/midnight-tulips.webp" alt="Midnight Tulips" width="190"> | Hoa đêm dịu nhẹ | Hoa tập trung ở rìa ảnh, vùng nội dung ít chi tiết |
+| **Prince & Princess** | <img src="assets/wallpapers/moonlit-romance.webp" alt="Prince & Princess" width="190"> | Cổ tích lãng mạn | Nhân vật ở xa, giữ không gian thoáng cho hội thoại |
+| **Arcane Library** | <img src="assets/wallpapers/arcane-library.webp" alt="Arcane Library" width="190"> | Pixel art · Dark Academia | Ánh đèn và kệ sách nằm về hai bên |
+| **The Silent King** | <img src="assets/wallpapers/silent-king.webp" alt="The Silent King" width="190"> | Cờ vua · Tối giản | Quân cờ nằm phía phải; khoảng trống tối để đọc chữ |
 
-Các hình nền được thiết kế theo tông tối để giữ nội dung hội thoại dễ đọc. Bộ sưu tập sẽ được chọn lọc và mở rộng dần.
+Bạn cũng có thể nhập hình nền cá nhân từ menu **☾**.
 
 ### ✨ Tính năng
 
@@ -103,11 +105,23 @@ Mã nguồn ở [`src/`](src/), ảnh ở [`assets/`](assets/), bộ công cụ 
 
 **ChatGPT Dreamscape** is an independent, open-source userscript that brings atmospheric wallpapers and **Victor**, a tiny gray pixel cat, to the **desktop ChatGPT web interface**.
 
-> **Early public preview · v0.3.5.** This is a community customization, not an official OpenAI feature. Changes to ChatGPT's interface may affect compatibility. Please [open an issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues) when something breaks.
+> **Early public preview · v0.3.6.** This is a community customization, not an official OpenAI feature. Changes to ChatGPT's interface may affect compatibility. Please [open an issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues) when something breaks.
 
 ### 🖼️ Built-in wallpapers
 
-The five bundled originals are **Moonlit Castle**, **Midnight Tulips**, **Prince & Princess**, **Arcane Library**, and **The Silent King**. See the [wallpaper gallery above](#tieng-viet); you can also import your own images.
+Dreamscape includes **5 original wallpapers**, designed to balance atmosphere and chat readability.
+
+![Five ChatGPT Dreamscape wallpapers](docs/images/wallpaper-gallery-v036.png)
+
+| Wallpaper | Preview | Mood | Readability |
+| --- | --- | --- | --- |
+| **Moonlit Castle** | <img src="assets/wallpapers/moonlit-castle.webp" alt="Moonlit Castle" width="190"> | Moonlit fantasy | Distant castle and dark sky leave room for text |
+| **Midnight Tulips** | <img src="assets/wallpapers/midnight-tulips.webp" alt="Midnight Tulips" width="190"> | Nocturnal florals | Flowers frame the edges, leaving a quiet center |
+| **Prince & Princess** | <img src="assets/wallpapers/moonlit-romance.webp" alt="Prince & Princess" width="190"> | Poetic romance | Distant silhouettes keep the conversation area clear |
+| **Arcane Library** | <img src="assets/wallpapers/arcane-library.webp" alt="Arcane Library" width="190"> | Pixel art · Dark academia | Bookshelves and lamp frame a calm dark center |
+| **The Silent King** | <img src="assets/wallpapers/silent-king.webp" alt="The Silent King" width="190"> | Minimalist chess | Chess pieces on the right preserve dark text-friendly space |
+
+You can also import your own wallpapers from the **☾** menu.
 
 ### ✨ Features
 
