@@ -42,6 +42,16 @@ Nếu trình duyệt tải tệp `.user.js` xuống thay vì mở trang cài đ�
 
 **Nền tảng mục tiêu:** Chrome, Firefox, Edge và Brave trên Windows, macOS và Linux (ưu tiên kiểm thử Chrome và Firefox). Chưa hỗ trợ chính thức trình duyệt di động hoặc ứng dụng ChatGPT desktop. Khả năng tương thích trên mọi trình duyệt vẫn cần kiểm chứng thực tế.
 
+### 🔧 Khắc phục lỗi: Không thấy Dreamscape
+
+Nếu hình nền, Victor hoặc nút **☾** không xuất hiện, Tampermonkey có thể chưa được phép chạy userscript. Với **Chrome 138 trở lên** và một số trình duyệt Chromium:
+
+1. Mở `chrome://extensions/` → **Tampermonkey** → **Details** → bật **Allow User Scripts** (có thể cần bật **Developer mode** trước; tên tùy chọn có thể khác tùy trình duyệt).
+2. Vào **Tampermonkey Dashboard**, kiểm tra **ChatGPT Dreamscape** đã được bật.
+3. Tải lại [chatgpt.com](https://chatgpt.com/).
+
+**Kiểm tra nhanh (không bắt buộc):** Nhấn `F12` → **Console** rồi chạy `!!document.querySelector("#dreamscape-app")`. Kết quả `true` nghĩa là giao diện Dreamscape đã được chèn vào trang; nếu hình nền vẫn không hiện, hãy kiểm tra nút bật giao diện trong phần cài đặt **☾**.
+
 ### 🐈 Gặp Victor
 
 <img src="assets/pets/victor/idle-1.webp" alt="Victor — chú mèo pixel xám" width="65">
@@ -111,6 +121,16 @@ The three bundled originals are **Moonlit Castle**, **Midnight Tulips**, and **P
 If the browser downloads the `.user.js` instead of showing an installer, import that file through your userscript manager. Some Chromium-based browsers require enabling **Allow User Scripts** in extension settings.
 
 **Compatibility targets:** Chrome, Firefox, Edge and Brave on Windows, macOS and Linux, with Chrome and Firefox receiving priority testing. Mobile browsers and desktop-app integration are out of scope. Broad desktop compatibility is a goal, not a guarantee for every release.
+
+### 🔧 Troubleshooting: Dreamscape not showing
+
+If the wallpaper, Victor or the **☾** button is missing, your browser may be blocking Tampermonkey userscripts. On **Chrome 138+** and some Chromium-based browsers:
+
+1. Open `chrome://extensions/` → **Tampermonkey** → **Details** → enable **Allow User Scripts** (you may need **Developer mode** first; labels vary by browser).
+2. Check that **ChatGPT Dreamscape** is enabled in the **Tampermonkey Dashboard**.
+3. Reload [chatgpt.com](https://chatgpt.com/).
+
+**Optional check:** Press `F12` → **Console** and run `!!document.querySelector("#dreamscape-app")`. `true` means the Dreamscape interface was inserted; if the wallpaper is still missing, check whether the theme is enabled in **☾** settings.
 
 ### 🐈 Meet Victor
 
