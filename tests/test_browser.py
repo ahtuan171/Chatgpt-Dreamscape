@@ -64,7 +64,7 @@ def run_tests(page, real_storage):
     assert page.locator('.ds-theme option').count() == 3
     assert page.locator('.ds-panel').is_hidden()
     assert page.locator('html').evaluate("e=>e.classList.contains('ds-active')")
-    assert page.locator('#ds-victor').evaluate('e=>getComputedStyle(e).display!="none"&&e.querySelector("canvas").getContext("2d").getImageData(0,0,116,92).data.some((v,i)=>i%4===3&&v>0)')
+    assert page.locator('#ds-victor').evaluate('e=>getComputedStyle(e).display!="none"&&e.querySelector("canvas").getContext("2d").getImageData(0,0,148,118).data.some((v,i)=>i%4===3&&v>0)')
     victor_box=page.locator('#ds-victor').bounding_box()
     composer_box=page.locator('[data-testid="composer-root"]').bounding_box()
     assert victor_box['y'] < composer_box['y']
@@ -72,7 +72,7 @@ def run_tests(page, real_storage):
     assert page.locator('#ds-victor').count() == 1
     # Victor begins facing left and patrols toward the center from the upper-right corner.
     assert page.locator('#ds-victor').get_attribute('data-facing') == 'left'
-    assert round(victor_box['width']) == 64 and round(victor_box['height']) == 51
+    assert round(victor_box['width']) == 74 and round(victor_box['height']) == 59
     page.wait_for_timeout(6800)
     moved_box=page.locator('#ds-victor').bounding_box()
     assert moved_box['x'] < victor_box['x'] - 4, (moved_box,victor_box)
@@ -84,14 +84,47 @@ def run_tests(page, real_storage):
     page.wait_for_function("document.getElementById('ds-victor')?.dataset.motion==='walk' && document.getElementById('ds-victor')?.dataset.facing==='right'",timeout=5000)
     for sel in ['#thread-bottom', '#thread-bottom-container', '.outer-dock']:
         assert page.locator(sel).evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgba(0, 0, 0, 0)', sel
-    assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgb(13, 18, 28)'
+    assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgba(12, 18, 30, 0.58)'
+    assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backdropFilter').startswith('blur(10px)')
+    assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).color') == 'rgb(241, 243, 250)'
     assert not page.locator('.ds-status').is_visible()
+    # Expanded composer / attachment-like UI must not revive a full-width black dock.
+    page.locator('form').evaluate('e=>e.style.minHeight="240px"')
+    page.locator('.outer-dock').evaluate('e=>e.style.height="300px"')
+    page.wait_for_timeout(350)
+    for selector in ['#thread-bottom','#thread-bottom-container','.outer-dock']:
+        assert page.locator(selector).evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgba(0, 0, 0, 0)', selector
+    assert page.locator('#ds-victor').is_visible()
+    folder = ROOT / 'tests/screenshots'
+    folder.mkdir(exist_ok=True)
+    page.screenshot(path=str(folder / 'expanded-composer.png'))
+    page.locator('form').evaluate('e=>e.style.minHeight=""')
+    page.locator('.outer-dock').evaluate('e=>e.style.height=""')
+    page.wait_for_timeout(250)
 
     folder = ROOT / 'tests/screenshots'
     folder.mkdir(exist_ok=True)
     page.screenshot(path=str(folder / 'default.png'))
     page.locator('.ds-launch').click()
     assert page.locator('.ds-panel').is_visible()
+    # Visible, keyboard-accessible checkmarks (not just text labels).
+    controls = ['.ds-victor-check', '.ds-motion-check', '.ds-glass-check', '.ds-active-check']
+    for selector in controls:
+        input_box = page.locator(selector)
+        assert input_box.is_visible(), selector
+        assert input_box.is_checked(), selector
+        rect = input_box.bounding_box()
+        assert rect['width'] == 20 and rect['height'] == 20, (selector, rect)
+        assert input_box.evaluate('e=>getComputedStyle(e, "::before").content') == '"✓"', selector
+    assert len(controls)==4
+    page.locator('.ds-glass-check').uncheck()
+    assert page.evaluate("JSON.parse(localStorage.getItem('dreamscape-public-v1')).glassComposer") is False
+    assert not page.locator('html').evaluate("e=>e.classList.contains('ds-glass-composer')")
+    assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgb(13, 18, 28)'
+    page.locator('.ds-glass-check').check()
+    assert page.evaluate("JSON.parse(localStorage.getItem('dreamscape-public-v1')).glassComposer") is True
+    assert page.locator('html').evaluate("e=>e.classList.contains('ds-glass-composer')")
+    assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgba(12, 18, 30, 0.58)'
     assert page.locator('.ds-wall-preview').is_visible()
     assert page.locator('.ds-hint').inner_text().startswith('Changes wallpaper cropping')
     for theme in ['moonlit-castle', 'midnight-tulips', 'moonlit-romance']:
@@ -155,7 +188,7 @@ def run_tests(page, real_storage):
     page.wait_for_timeout(250)
     assert page.locator('article h1').is_visible()
     assert not errors, errors
-    print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 3 themes, Victor right-side facing changes, single-canvas display, composer dock, dim, position, upload, save, delete, fallback and resize")
+    print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 3 themes, Victor 15%-larger right-side facing changes, visible persisted checkboxes, translucent composer and dock, dim, position, upload, save, delete, fallback and resize")
 
 def test_existing_selection_migration(browser, url, use_mock_storage):
     """Retired themes fall back, while saved custom wallpapers remain selected."""
