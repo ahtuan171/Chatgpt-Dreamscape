@@ -31,11 +31,11 @@
     let node=el.parentElement;
     const c=el.getBoundingClientRect();
     let depth=0;
-    while(node && depth<5 && node!==document.body && node!==document.documentElement){
+    while(node && depth<8 && node!==document.body && node!==document.documentElement){
       if(node.matches('main,[role="main"],#root,#sidebar,[data-testid="sidebar"]'))break;
       const rect=node.getBoundingClientRect();
       // Limit transparency to short composer wrappers, never chat turns or large panels.
-      if(rect.height>320 || rect.top<c.top-180) break;
+      if(rect.height>Math.max(420,c.height+150) || rect.top<c.top-180) break;
       node.classList.add('ds-dock');activeDockNodes.push(node);
       node=node.parentElement;depth++;
     }
