@@ -1,0 +1,118 @@
+/* Background is on the document, NOT a full-screen positioned overlay. */
+html.ds-active {
+  color-scheme: dark !important;
+  background: #091326 !important;
+  background-image: linear-gradient(rgba(2, 6, 14, var(--ds-dim, .18)),rgba(2, 6, 14, var(--ds-dim, .18))),var(--ds-wall) !important;
+  background-size: cover !important;
+  background-position: var(--ds-position, 50%) center !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+  --main-surface-primary: transparent;
+}
+html.ds-active body,
+html.ds-active #root,
+html.ds-active #root > div {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+html.ds-active main,
+html.ds-active [role="main"],
+html.ds-active #thread,
+html.ds-active [data-testid="conversation-turns"],
+html.ds-active .bg-token-main-surface-primary {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+/* Leave the sidebar opaque and readable. */
+html.ds-active #sidebar,
+html.ds-active [data-testid="sidebar"] {
+  background-color: rgba(7, 12, 24, .98) !important;
+}
+/* Only short wrappers around the input get transparent treatment. */
+html.ds-active .ds-dock,
+html.ds-active #thread-bottom,
+html.ds-active #thread-bottom-container {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html.ds-active .ds-dock::before,
+html.ds-active .ds-dock::after,
+html.ds-active #thread-bottom::before,
+html.ds-active #thread-bottom::after,
+html.ds-active #thread-bottom-container::before,
+html.ds-active #thread-bottom-container::after {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+html.ds-active .ds-composer,
+html.ds-active [data-testid="composer-root"] {
+  background: #0d121c !important;
+  background-image: none !important;
+  color: #f1f3fa !important;
+  border: 1px solid rgba(228, 209, 170, .52) !important;
+  border-radius: 21px !important;
+  box-shadow: 0 6px 24px rgba(0,0,0,.35) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html.ds-active .ds-composer [contenteditable="true"],
+html.ds-active .ds-composer textarea {
+  color: #f1f3fa !important;
+  background: transparent !important;
+}
+#dreamscape-app {
+  position: fixed;
+  width: 0;
+  height: 0;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 2147483000;
+  color: #eaf0fa;
+  font: 13px system-ui, sans-serif;
+}
+#dreamscape-app * {box-sizing: border-box;}
+#dreamscape-app [hidden], #ds-victor[hidden] {display: none !important;}
+#dreamscape-app .ds-launch {
+  position: fixed;right: 17px;bottom: 18px;width: 40px;height: 40px;
+  border-radius: 50%;border: 1px solid rgba(228, 209, 170, .58);
+  color: #e8d6b2;background: #121d30;
+  cursor: pointer;pointer-events: auto;font-size: 24px;box-shadow: 0 4px 17px #0008;
+}
+#dreamscape-app .ds-panel {
+  position: fixed;right: 17px;bottom: 68px;width: min(320px, calc(100vw - 34px));
+  max-height: min(75vh, 625px);overflow-y: auto;
+  color: #eaf0fa;background: #111b2d;
+  border: 1px solid #ffffff29;border-radius: 15px;pointer-events: auto;
+  padding: 17px;box-shadow: 0 15px 38px #000c;
+}
+#dreamscape-app .ds-heading {display: flex;align-items: center;justify-content: space-between;margin-bottom: 16px;}
+#dreamscape-app .ds-heading strong {font-size: 15px;}
+#dreamscape-app .ds-heading button {color: inherit;background: none;border: 0;font-size: 23px;cursor: pointer;}
+#dreamscape-app label {display: block;margin: 12px 0 6px;line-height: 1.5;}
+#dreamscape-app .ds-panel select {
+  width: 100%;padding: 9px 10px;border: 1px solid #ffffff33;
+  color: #f0f4ff;background: #0c1526;border-radius: 8px;
+}
+#dreamscape-app .ds-panel input[type="range"] {width: 100%;accent-color: #dfc895;}
+#dreamscape-app .ds-panel input[type="checkbox"] {margin-right: 8px;accent-color: #dfc895;}
+#dreamscape-app .ds-choice {margin: 11px 0;}
+#dreamscape-app .ds-actions {display: flex;gap: 10px;margin: 12px 0;align-items: center;}
+#dreamscape-app .ds-actions button,
+#dreamscape-app .ds-upload-label {
+  background: #24314a;border: 1px solid #ffffff33;
+  border-radius: 8px;color: #f0f4ff;padding: 8px 10px;margin: 0;cursor: pointer;
+}
+#dreamscape-app .ds-separator {height: 1px;background: #ffffff20;margin-top: 15px;}
+#dreamscape-app .ds-panel small {display: block;line-height: 1.5;opacity: .65;margin-top: 14px;}
+#dreamscape-app .ds-status {font-size: 12px;line-height: 1.5;color: #f2d8a3;margin: 10px 0;}
+#ds-victor {
+  position: fixed;width: 48px;height: 48px;object-fit: contain;image-rendering: pixelated;
+  pointer-events: none;z-index: 2147482999;
+  filter: drop-shadow(0 2px 2px #0008);
+}
+@media (prefers-reduced-motion: reduce){#ds-victor {transition: none !important;}}

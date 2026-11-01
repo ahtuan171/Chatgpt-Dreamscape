@@ -1,0 +1,20 @@
+[
+  {
+    "id": "moonlit-village",
+    "name": "Moonlit Village",
+    "dim": 18,
+    "file": "assets/wallpapers/moonlit-village.webp"
+  },
+  {
+    "id": "moonlit-castle",
+    "name": "Moonlit Castle",
+    "dim": 22,
+    "file": "assets/wallpapers/moonlit-castle.webp"
+  },
+  {
+    "id": "midnight-tulips",
+    "name": "Midnight Tulips",
+    "dim": 8,
+    "file": "assets/wallpapers/midnight-tulips.webp"
+  }
+]

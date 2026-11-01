@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Dreamscape test fixture</title><style>
+*{box-sizing:border-box}html,body,#root{margin:0;min-height:100%;background:#161616;color:#eeeeee;font-family:Arial,sans-serif}
+#root{min-height:100vh}#sidebar{background:#0d0d0d;width:250px;position:fixed;top:0;left:0;bottom:0;padding:20px;color:white}
+main{margin-left:250px;min-height:100vh;background:#171717;padding:28px 10vw 180px}
+.bg-token-main-surface-primary{background:#171717}article{padding:12px 0;max-width:750px;margin:auto;line-height:1.7}
+#thread-bottom{position:fixed;left:250px;right:0;bottom:0;min-height:103px;background:#000;display:flex;align-items:center;justify-content:center}
+#thread-bottom-container{width:100%;background:#000;min-height:100px;display:flex;align-items:center;justify-content:center}
+.outer-dock{background:#000;width:100%;height:90px;display:flex;justify-content:center;align-items:center}
+form{width:min(750px,85%);background:#252525;border-radius:20px;padding:12px 22px;min-height:64px;display:flex;align-items:center}
+#prompt-textarea{flex:1;outline:none;min-height:28px;padding:8px;color:white;font-size:15px}
+</style></head><body>
+<div id="root"><aside id="sidebar"><h2>ChatGPT</h2><p>New Chat</p><p>Dreamscape testing</p></aside>
+<main><article><h1>Dreamscape preview</h1><p>Your ChatGPT conversation must remain visible and readable above the wallpaper.</p><p>There must be no black rectangular background stretching across the composer dock.</p></article></main>
+<div id="thread-bottom"><div id="thread-bottom-container"><div class="outer-dock"><form data-testid="composer-root"><div id="prompt-textarea" contenteditable="true" role="textbox">Ask ChatGPT</div><button type="button">➤</button></form></div></div></div>
+</div></body></html>

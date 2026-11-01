@@ -1,0 +1,15 @@
+{
+  "idle": [
+    "assets/pets/victor/idle-1.webp",
+    "assets/pets/victor/idle-2.webp"
+  ],
+  "walk": [
+    "assets/pets/victor/walk-1.webp",
+    "assets/pets/victor/walk-2.webp",
+    "assets/pets/victor/walk-3.webp"
+  ],
+  "sleep": [
+    "assets/pets/victor/sleep-1.webp",
+    "assets/pets/victor/sleep-2.webp"
+  ]
+}
