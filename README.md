@@ -11,21 +11,25 @@
 
 **ChatGPT Dreamscape** là một userscript mã nguồn mở giúp bạn tùy chỉnh giao diện ChatGPT trên **trình duyệt máy tính** bằng những hình nền giàu cảm xúc và một người bạn pixel nhỏ tên **Victor**.
 
-> **Bản xem trước v0.3.4.** Đây là dự án cộng đồng độc lập, không phải tính năng chính thức của OpenAI. Giao diện ChatGPT có thể thay đổi và ảnh hưởng đến userscript; nếu phát hiện lỗi, hãy [tạo issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues).
+> **Bản xem trước v0.3.5.** Đây là dự án cộng đồng độc lập, không phải tính năng chính thức của OpenAI. Giao diện ChatGPT có thể thay đổi và ảnh hưởng đến userscript; nếu phát hiện lỗi, hãy [tạo issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues).
 
 ### 🖼️ Thư viện hình nền
 
-Ba hình nền gốc đang được tích hợp sẵn. Bạn cũng có thể thêm hình nền của riêng mình.
+Năm hình nền gốc đang được tích hợp sẵn. Bạn cũng có thể thêm hình nền của riêng mình.
 
 | Moonlit Castle | Midnight Tulips | Prince & Princess |
 | :---: | :---: | :---: |
 | <img src="assets/wallpapers/moonlit-castle.webp" alt="Lâu đài dưới ánh trăng — Moonlit Castle" width="260"> | <img src="assets/wallpapers/midnight-tulips.webp" alt="Hoa tulip trong đêm — Midnight Tulips" width="260"> | <img src="assets/wallpapers/moonlit-romance.webp" alt="Hoàng tử và công chúa dưới trăng — Prince & Princess" width="260"> |
 
+| Arcane Library | The Silent King |
+| :---: | :---: |
+| <img src="assets/wallpapers/arcane-library.webp" alt="Thư viện phép thuật phong cách pixel art — Arcane Library" width="390"> | <img src="assets/wallpapers/silent-king.webp" alt="Quân vua cờ vua trắng giữa bóng tối — The Silent King" width="390"> |
+
 Các hình nền được thiết kế theo tông tối để giữ nội dung hội thoại dễ đọc. Bộ sưu tập sẽ được chọn lọc và mở rộng dần.
 
 ### ✨ Tính năng
 
-- **Đổi hình nền:** lựa chọn một trong ba hình nền có sẵn hoặc tải ảnh cá nhân (PNG, JPG, WebP).
+- **Đổi hình nền:** lựa chọn một trong năm hình nền có sẵn hoặc tải ảnh cá nhân (PNG, JPG, WebP).
 - **Tùy chỉnh từng ảnh:** xem trước, điều chỉnh độ tối và vị trí hiển thị theo chiều ngang (0% trái · 50% giữa · 100% phải khi ảnh bị cắt).
 - **Lưu trữ trên thiết bị:** ảnh cá nhân được xử lý và lưu trong trình duyệt bằng IndexedDB; không tải lên máy chủ hình nền.
 - **Victor — bạn mèo pixel:** đứng phía trên tùy chọn mức suy luận “High” trong ô nhập (hoặc vị trí gần đó nếu giao diện khác), lớn hơn 15% so với v0.3.1, đi lại một đoạn ngắn, quay đầu, chớp mắt và ngủ. Nhấp vào Victor để chú mèo nhảy lên và hiện trái tim; có thể bật/tắt và tôn trọng tùy chọn giảm chuyển động.
@@ -99,11 +103,11 @@ Mã nguồn ở [`src/`](src/), ảnh ở [`assets/`](assets/), bộ công cụ 
 
 **ChatGPT Dreamscape** is an independent, open-source userscript that brings atmospheric wallpapers and **Victor**, a tiny gray pixel cat, to the **desktop ChatGPT web interface**.
 
-> **Early public preview · v0.3.4.** This is a community customization, not an official OpenAI feature. Changes to ChatGPT's interface may affect compatibility. Please [open an issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues) when something breaks.
+> **Early public preview · v0.3.5.** This is a community customization, not an official OpenAI feature. Changes to ChatGPT's interface may affect compatibility. Please [open an issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues) when something breaks.
 
 ### 🖼️ Built-in wallpapers
 
-The three bundled originals are **Moonlit Castle**, **Midnight Tulips**, and **Prince & Princess**. See the [wallpaper gallery above](#tieng-viet); you can also import your own images.
+The five bundled originals are **Moonlit Castle**, **Midnight Tulips**, **Prince & Princess**, **Arcane Library**, and **The Silent King**. See the [wallpaper gallery above](#tieng-viet); you can also import your own images.
 
 ### ✨ Features
 

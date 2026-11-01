@@ -22,5 +22,21 @@
     "file": "assets/wallpapers/moonlit-romance.webp",
     "group": "Moonlit & Fantasy",
     "appearance": "dark"
+  },
+  {
+    "id": "arcane-library",
+    "name": "Arcane Library",
+    "dim": 16,
+    "file": "assets/wallpapers/arcane-library.webp",
+    "group": "Dark Academia",
+    "appearance": "dark"
+  },
+  {
+    "id": "silent-king",
+    "name": "The Silent King",
+    "dim": 10,
+    "file": "assets/wallpapers/silent-king.webp",
+    "group": "Discipline & Stoicism",
+    "appearance": "dark"
   }
 ]

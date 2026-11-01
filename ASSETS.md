@@ -1,12 +1,14 @@
 # Artwork and asset notes
 
-Dreamscape currently bundles **three original wallpapers** and **Victor**, the gray pixel cat.
+Dreamscape currently bundles **five original wallpapers** and **Victor**, the gray pixel cat.
 
 | Wallpaper | Origin |
 | --- | --- |
 | Moonlit Castle | Original AI-assisted illustration created for this project |
 | Midnight Tulips | Original AI-assisted illustration created for this project |
 | Prince & Princess | Original AI-assisted moonlit romantic silhouette made for this project |
+| Arcane Library | Original AI-assisted pixel-art fantasy library made for this project |
+| The Silent King | Original AI-assisted cinematic monochrome chess wallpaper made for this project |
 
 The other eight previously bundled wallpapers, including Moonlit Village, have been removed from the public collection. The procedural wallpaper generator has also been removed to avoid recreating retired art.
 

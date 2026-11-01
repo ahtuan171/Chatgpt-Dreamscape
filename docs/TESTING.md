@@ -3,7 +3,7 @@
 The fast smoke test loads `tests/chatgpt-fixture.html` (a **simulated** ChatGPT DOM) and injects the bundled userscript. It checks:
 
 - Conversation and sidebar remain visible
-- All three built-in wallpapers switch, display previews, and preserve dimming/position controls
+- All five built-in wallpapers switch, display previews, and preserve dimming/position controls
 - Victor is visible near the right corner of the composer, an additional 15% larger (74 × 59 CSS px), moves left then turns to face right within an 80px patrol, and can be disabled
 - The outer composer **dock** remains transparent for collapsed and expanded composers; the rounded input defaults to translucent glass (58% charcoal), with an optional solid-background toggle
 - Attachment-style composer reparenting with the **same form element**, 12 newly opaque nested dock wrappers, and a separate decorative black backdrop: all become transparent without touching conversation text (CSS and screenshot-pixel regression)
@@ -27,4 +27,4 @@ Tests try a loopback fixture server (real IndexedDB/localStorage). Restricted sa
 
 ### Wallpaper readability and licensing
 
-All three built-in wallpapers use light chat text over dark backgrounds. Because every display/browser renders contrast differently, manually verify each wallpaper with real ChatGPT messages and headings. Third-party photos and fan art are **not bundled** without distribution permission; users may import their own privately.
+All five built-in wallpapers use light chat text over dark backgrounds. Because every display/browser renders contrast differently, manually verify each wallpaper with real ChatGPT messages and headings. Third-party photos and fan art are **not bundled** without distribution permission; users may import their own privately.
