@@ -2,7 +2,7 @@
   const STORAGE_KEY = 'dreamscape-public-v1';
   const STORE_DB = 'dreamscape-wallpapers-v1';
   const STORE = 'wallpapers';
-  const DEFAULTS = {enabled:true, theme:'moonlit-village', victor:true, motion:true, dimOverrides:{}, positionOverrides:{}};
+  const DEFAULTS = {enabled:true, theme:'moonlit-castle', victor:true, motion:true, dimOverrides:{}, positionOverrides:{}};
   let userSettings = {};
   try { userSettings = JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}') || {}; } catch {}
   const settings = {...DEFAULTS, ...userSettings};

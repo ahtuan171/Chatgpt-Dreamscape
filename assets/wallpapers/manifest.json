@@ -1,12 +1,5 @@
 [
   {
-    "id": "moonlit-village",
-    "name": "Moonlit Village",
-    "dim": 18,
-    "file": "assets/wallpapers/moonlit-village.webp",
-    "group": "Moonlit Originals"
-  },
-  {
     "id": "moonlit-castle",
     "name": "Moonlit Castle",
     "dim": 22,
@@ -19,54 +12,5 @@
     "dim": 8,
     "file": "assets/wallpapers/midnight-tulips.webp",
     "group": "Moonlit Originals"
-  },
-  {
-    "id": "luminous-garden",
-    "name": "Luminous Garden",
-    "dim": 10,
-    "file": "assets/wallpapers/luminous-garden.webp",
-    "group": "Pixel Dreams"
-  },
-  {
-    "id": "starlit-forest",
-    "name": "Starlit Forest",
-    "dim": 12,
-    "file": "assets/wallpapers/starlit-forest.webp",
-    "group": "Pixel Dreams"
-  },
-  {
-    "id": "violet-city",
-    "name": "Violet City",
-    "dim": 20,
-    "file": "assets/wallpapers/violet-city.webp",
-    "group": "Pixel Dreams"
-  },
-  {
-    "id": "golden-wildflowers",
-    "name": "Golden Wildflowers",
-    "dim": 8,
-    "file": "assets/wallpapers/golden-wildflowers.webp",
-    "group": "Minimal & Focus"
-  },
-  {
-    "id": "quiet-library",
-    "name": "Quiet Library",
-    "dim": 10,
-    "file": "assets/wallpapers/quiet-library.webp",
-    "group": "Minimal & Focus"
-  },
-  {
-    "id": "chess-at-night",
-    "name": "Chess at Night",
-    "dim": 6,
-    "file": "assets/wallpapers/chess-at-night.webp",
-    "group": "Minimal & Focus"
-  },
-  {
-    "id": "piano-nocturne",
-    "name": "Piano Nocturne",
-    "dim": 7,
-    "file": "assets/wallpapers/piano-nocturne.webp",
-    "group": "Minimal & Focus"
   }
 ]

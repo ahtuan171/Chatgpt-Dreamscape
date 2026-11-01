@@ -9,7 +9,7 @@
   function wallpaperPosition(id){return clamp(Number(settings.positionOverrides[id]??50)||0,0,100);}
   function setWallpaperProperties(){
     const wallpaper=activeWallpaper();
-    if(!findWallpaper(settings.theme))settings.theme=wallpaper.id;
+    if(!findWallpaper(settings.theme)&&!String(settings.theme).startsWith('custom-'))settings.theme=wallpaper.id;
     const src=wallpaper.uri||customObjectUrls.get(wallpaper.id);
     if(src)document.documentElement.style.setProperty('--ds-wall',`url("${src}")`);
     document.documentElement.style.setProperty('--ds-dim',String(wallpaperDim(wallpaper.id)/100));
@@ -27,6 +27,9 @@
         customObjectUrls.set(item.id,URL.createObjectURL(item.blob));
       }
     }catch(err){console.warn('[Dreamscape] Custom wallpapers unavailable:',err);showStatus('Custom wallpaper storage unavailable in this browser.');}
+    // Unknown or removed built-in selections fall back to Moonlit Castle.
+    // Do this after IndexedDB loads so saved custom choices are not reset.
+    if(!findWallpaper(settings.theme))settings.theme=builtins[0].id;
     refreshThemePicker();setWallpaperProperties();
   }
   async function addWallpaper(file){

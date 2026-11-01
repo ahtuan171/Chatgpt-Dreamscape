@@ -61,7 +61,7 @@ def run_tests(page, real_storage):
     assert page.locator('#dreamscape-app').count() == 1
     assert page.locator('article h1').is_visible()
     assert page.locator('#sidebar').is_visible()
-    assert page.locator('.ds-theme option').count() == 10
+    assert page.locator('.ds-theme option').count() == 2
     assert page.locator('.ds-panel').is_hidden()
     assert page.locator('html').evaluate("e=>e.classList.contains('ds-active')")
     assert page.locator('#ds-victor').evaluate('e=>getComputedStyle(e).display!="none"&&e.querySelector("canvas").getContext("2d").getImageData(0,0,116,92).data.some((v,i)=>i%4===3&&v>0)')
@@ -87,7 +87,7 @@ def run_tests(page, real_storage):
     assert page.locator('.ds-panel').is_visible()
     assert page.locator('.ds-wall-preview').is_visible()
     assert page.locator('.ds-hint').inner_text().startswith('Changes wallpaper cropping')
-    for theme in ['moonlit-castle', 'midnight-tulips', 'luminous-garden', 'starlit-forest', 'violet-city', 'golden-wildflowers', 'quiet-library', 'chess-at-night', 'piano-nocturne', 'moonlit-village']:
+    for theme in ['moonlit-castle', 'midnight-tulips']:
         page.locator('.ds-theme').select_option(theme)
         prop = page.evaluate("document.documentElement.style.getPropertyValue('--ds-wall')")
         assert prop.startswith('url("data:image/webp;base64,'), theme
@@ -109,7 +109,7 @@ def run_tests(page, real_storage):
     page.locator('.ds-upload').set_input_files(str(ROOT / 'assets/wallpapers/midnight-tulips.webp'))
     page.wait_for_timeout(800)
     assert not errors, errors
-    assert page.locator('.ds-theme option').count() == 11
+    assert page.locator('.ds-theme option').count() == 3
     saved_id = page.locator('.ds-theme').input_value()
     assert saved_id.startswith('custom-'), saved_id
     assert page.locator('.ds-delete').is_visible()
@@ -122,15 +122,15 @@ def run_tests(page, real_storage):
         page.add_script_tag(content=SCRIPT)
         page.wait_for_timeout(650)
         assert page.locator('.ds-theme').input_value() == saved_id
-        assert page.locator('.ds-theme option').count() == 11
+        assert page.locator('.ds-theme option').count() == 3
         page.locator('.ds-launch').click()
     else:
         assert page.evaluate(f"window.__dreamscapeTestStores.records.has('{saved_id}')")
         assert saved_id in page.evaluate("window.__dreamscapeTestStores.settings.get('dreamscape-public-v1')")
     page.locator('.ds-delete').click()
     page.wait_for_timeout(200)
-    assert page.locator('.ds-theme option').count() == 10
-    assert page.locator('.ds-theme').input_value() == 'moonlit-village'
+    assert page.locator('.ds-theme option').count() == 2
+    assert page.locator('.ds-theme').input_value() == 'moonlit-castle'
     page.locator('form').evaluate('e=>e.removeAttribute("data-testid")')
     page.wait_for_timeout(400)
     assert page.locator('#ds-victor').is_visible()
@@ -138,7 +138,62 @@ def run_tests(page, real_storage):
     page.wait_for_timeout(250)
     assert page.locator('article h1').is_visible()
     assert not errors, errors
-    print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 10 themes, Victor single-canvas display, composer dock, dim, position, upload, save, delete, fallback and resize")
+    print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 2 themes, Victor single-canvas display, composer dock, dim, position, upload, save, delete, fallback and resize")
+
+def test_existing_selection_migration(browser, url, use_mock_storage):
+    """Retired themes fall back, while saved custom wallpapers remain selected."""
+    page = browser.new_page(viewport={'width': 1440, 'height': 900})
+    if use_mock_storage:
+        page.set_content(FIXTURE)
+        page.evaluate(STORAGE_SHIM)
+    else:
+        page.goto(url)
+    page.evaluate("""() => localStorage.setItem('dreamscape-public-v1',
+        JSON.stringify({enabled:true, theme:'moonlit-village', victor:true,
+                        motion:true, dimOverrides:{}, positionOverrides:{}}))""")
+    page.add_script_tag(content=SCRIPT)
+    page.wait_for_function("() => document.querySelector('.ds-theme')?.value === 'moonlit-castle'")
+    assert page.locator('.ds-theme option').count() == 2
+    assert page.evaluate("JSON.parse(localStorage.getItem('dreamscape-public-v1')).theme") == 'moonlit-castle'
+    page.close()
+
+    page = browser.new_page(viewport={'width': 1440, 'height': 900})
+    if use_mock_storage:
+        page.set_content(FIXTURE)
+        page.evaluate(STORAGE_SHIM)
+    else:
+        page.goto(url)
+    page.evaluate("""() => {
+      const id='custom-kept-by-upgrade';
+      localStorage.setItem('dreamscape-public-v1',JSON.stringify({
+        enabled:true, theme:id, victor:true, motion:true,
+        dimOverrides:{}, positionOverrides:{}}));
+    }""")
+    if use_mock_storage:
+        page.evaluate("""() => window.__dreamscapeTestStores.records.set(
+          'custom-kept-by-upgrade',
+          {id:'custom-kept-by-upgrade',name:'Kept wallpaper',dim:20,
+           blob:new Blob(['data'],{type:'image/webp'})})""")
+    else:
+        page.evaluate("""() => new Promise((resolve,reject)=>{
+          const req=indexedDB.open('dreamscape-wallpapers-v1',1);
+          req.onupgradeneeded=()=>req.result.createObjectStore('wallpapers',{keyPath:'id'});
+          req.onerror=()=>reject(req.error);
+          req.onsuccess=()=>{
+            const db=req.result;
+            const tx=db.transaction('wallpapers','readwrite');
+            tx.objectStore('wallpapers').put({id:'custom-kept-by-upgrade',name:'Kept wallpaper',dim:20,
+              blob:new Blob(['data'],{type:'image/webp'})});
+            tx.oncomplete=()=>{db.close();resolve()};
+            tx.onerror=()=>reject(tx.error);
+          };
+        })""")
+    page.add_script_tag(content=SCRIPT)
+    page.wait_for_function("() => document.querySelector('.ds-theme')?.value === 'custom-kept-by-upgrade'")
+    assert page.locator('.ds-theme option').count() == 3
+    assert page.evaluate("JSON.parse(localStorage.getItem('dreamscape-public-v1')).theme") == 'custom-kept-by-upgrade'
+    page.close()
+    print('PASS: removed wallpaper migrates to Moonlit Castle; existing personal wallpaper preserved')
 
 with Server(('127.0.0.1', 0), Handler) as server:
     threading.Thread(target=server.serve_forever, daemon=True).start()
@@ -158,5 +213,6 @@ with Server(('127.0.0.1', 0), Handler) as server:
             page.evaluate(STORAGE_SHIM)
             print('NOTE: browser navigation restricted; using about:blank fixture with simulated storage. Native IndexedDB must be tested in CI.')
         run_tests(page, real_storage)
+        test_existing_selection_migration(browser, url, not real_storage)
         browser.close()
     server.shutdown()

@@ -2,11 +2,11 @@
 
 **Make your ChatGPT feel like home.** Dreamscape is an independent, open-source userscript that adds atmospheric wallpapers and **Victor**, a tiny gray pixel cat, to the desktop ChatGPT web interface.
 
-> **Early public preview · v0.2.0.** This is a community customization, not an official OpenAI/ChatGPT feature. ChatGPT's page structure can change; if you spot an issue, please open a GitHub issue.
+> **Early public preview · v0.2.1.** This is a community customization, not an official OpenAI/ChatGPT feature. ChatGPT's page structure can change; if you spot an issue, please open a GitHub issue.
 
 ## ✨ Features
 
-- **10 curated, dark originals**: Moonlit Village, Moonlit Castle, Midnight Tulips, Luminous Garden, Starlit Forest, Violet City, Golden Wildflowers, Quiet Library, Chess at Night and Piano Nocturne. Images are chosen to keep the main reading area relatively dark.
+- **2 built-in wallpapers**: Moonlit Castle and Midnight Tulips. The collection is intentionally small while we prepare more original artwork; both have dark areas to keep conversations readable.
 - **Your own wallpapers**: import PNG, JPEG or WebP; image processing and storage happen *in your browser* via IndexedDB.
 - **Personal controls**: wallpaper previews, per-wallpaper dimming and horizontal cropping (0% left / 50% center / 100% right when cropped).
 - **Victor**: the gray pixel cat stays on the **left edge of the composer**, takes a small walk (up to 80px), rests, blinks, and sleeps. Turn him off at any time.
@@ -24,6 +24,8 @@ If the browser downloads the `.user.js` file instead of opening the installer, o
 **Compatibility targets:** Chrome, Firefox, Edge and Brave on Windows, macOS and Linux. Chrome/Firefox get priority testing. Mobile browsers and desktop-app injection are intentionally out of scope; cross-platform behavior is a target, not a promise of verified support on every release.
 
 ## 🖼️ Bring your own wallpaper
+
+**Updating from an earlier Dreamscape version?** Retired built-in wallpapers are no longer included. If one was selected, Dreamscape will switch to Moonlit Castle automatically. Wallpapers you imported into **My Wallpapers** remain stored locally in your browser.
 
 Choose **☾ → Add wallpaper**. Files must be PNG/JPEG/WebP and under 15 MB. Dreamscape resizes large images (up to 2400 × 1600) and converts them to optimized WebP in your browser, then saves them locally to IndexedDB. You can select, dim, reposition or delete imported wallpapers. Nothing is sent to a wallpaper server.
 
@@ -46,7 +48,7 @@ python -m playwright install chromium
 python tests/test_browser.py
 ```
 
-Source code lives in `src/`, bundled original art in `assets/`, build tooling in `tools/`, and the installable userscript in `dist/dreamscape.user.js`. Build output embeds the included images, so installed users make **no external wallpaper requests**. To regenerate the seven procedural scenes, install `Pillow` and `NumPy` and run `python tools/generate_wallpapers.py` before rebuilding. The browser test uses a local fixture, not a real ChatGPT login; see [Testing](docs/TESTING.md).
+Source code lives in `src/`, bundled original art in `assets/`, build tooling in `tools/`, and the installable userscript in `dist/dreamscape.user.js`. Build output embeds the included images, so installed users make **no external wallpaper requests**. The browser test uses a local fixture, not a real ChatGPT login; see [Testing](docs/TESTING.md).
 
 ## 🛡️ Safety and limitations
 

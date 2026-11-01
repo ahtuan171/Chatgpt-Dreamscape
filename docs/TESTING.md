@@ -3,10 +3,11 @@
 The fast smoke test loads `tests/chatgpt-fixture.html` (a **simulated** ChatGPT DOM) and injects the bundled userscript. It checks:
 
 - Conversation and sidebar remain visible
-- All 10 original wallpapers switch, display previews, and preserve dimming/position controls
+- Both built-in wallpapers switch, display previews, and preserve dimming/position controls
 - Victor is visible on the left edge of the composer, moves within a short 80px patrol, and can be disabled
 - Black background on the composer **dock** disappears but the rounded composer remains opaque
 - Custom wallpaper import, IndexedDB storage, restore and deletion
+- Saved selections of removed built-in wallpapers safely fall back to Moonlit Castle, without deleting custom uploads
 - Fallback selection of alternate composer markup
 
 Run from repository root:
@@ -24,4 +25,4 @@ Tests try a loopback fixture server (real IndexedDB/localStorage). Restricted sa
 
 ### Wallpaper readability and licensing
 
-The original wallpaper set was curated for dark reading surfaces; central regions have low average luminance. Because every display/browser renders contrast differently, manually verify each wallpaper with real ChatGPT messages and headings. Third-party photos and fan art are **not bundled** without distribution permission; users may import their own privately.
+The built-in wallpaper collection is curated for dark reading surfaces; central regions have low average luminance. Because every display/browser renders contrast differently, manually verify each wallpaper with real ChatGPT messages and headings. Third-party photos and fan art are **not bundled** without distribution permission; users may import their own privately.
