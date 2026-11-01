@@ -2,14 +2,14 @@
 
 **Make your ChatGPT feel like home.** Dreamscape is an independent, open-source userscript that adds atmospheric wallpapers and **Victor**, a tiny gray pixel cat, to the desktop ChatGPT web interface.
 
-> **Early public preview · v0.1.0.** This is a community customization, not an official OpenAI/ChatGPT feature. ChatGPT's page structure can change; if you spot an issue, please open a GitHub issue.
+> **Early public preview · v0.2.0.** This is a community customization, not an official OpenAI/ChatGPT feature. ChatGPT's page structure can change; if you spot an issue, please open a GitHub issue.
 
 ## ✨ Features
 
-- **3 original wallpapers**: Moonlit Village, Moonlit Castle and Midnight Tulips.
+- **10 curated, dark originals**: Moonlit Village, Moonlit Castle, Midnight Tulips, Luminous Garden, Starlit Forest, Violet City, Golden Wildflowers, Quiet Library, Chess at Night and Piano Nocturne. Images are chosen to keep the main reading area relatively dark.
 - **Your own wallpapers**: import PNG, JPEG or WebP; image processing and storage happen *in your browser* via IndexedDB.
-- **Personal controls**: per-wallpaper dimming and horizontal positioning.
-- **Victor**: the gray pixel cat sits on your prompt box and has idle, walking and sleeping frames. Turn him off at any time.
+- **Personal controls**: wallpaper previews, per-wallpaper dimming and horizontal cropping (0% left / 50% center / 100% right when cropped).
+- **Victor**: the gray pixel cat stays on the **left edge of the composer**, takes a small walk (up to 80px), rests, blinks, and sleeps. Turn him off at any time.
 - **Lightweight, optional styling**: the sidebar remains readable and the message composer stays dark. A toggle restores ChatGPT's default styling.
 - **Privacy-first**: no analytics, no external image uploads, no chat-message collection, no account access beyond the web page needed for styling.
 
@@ -31,7 +31,7 @@ Imported images and preferences belong to the specific browser profile and websi
 
 ## 🐈 Meet Victor
 
-Victor is the **only** bundled pet. His animations are quiet, optional and respect your system's reduced-motion preference. The personal red Spidey sprite is **not included** in the public version.
+Victor is the **only** bundled pet. He stays near the left side of the message box, patrols a short stretch, and rests between movements. His animations are quiet, optional and respect your system's reduced-motion preference. The personal red Spidey sprite is **not included** in the public version. Previous users should disable all old Dreamscape scripts to avoid clashes.
 
 ## 🛠️ For contributors
 
@@ -46,7 +46,7 @@ python -m playwright install chromium
 python tests/test_browser.py
 ```
 
-Source code lives in `src/`, bundled original art in `assets/`, build tooling in `tools/`, and the installable userscript in `dist/dreamscape.user.js`. Build output embeds the included images, so installed users make **no external wallpaper requests**. The browser test uses a local fixture, not a real ChatGPT login; see [Testing](docs/TESTING.md).
+Source code lives in `src/`, bundled original art in `assets/`, build tooling in `tools/`, and the installable userscript in `dist/dreamscape.user.js`. Build output embeds the included images, so installed users make **no external wallpaper requests**. To regenerate the seven procedural scenes, install `Pillow` and `NumPy` and run `python tools/generate_wallpapers.py` before rebuilding. The browser test uses a local fixture, not a real ChatGPT login; see [Testing](docs/TESTING.md).
 
 ## 🛡️ Safety and limitations
 

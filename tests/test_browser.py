@@ -61,11 +61,20 @@ def run_tests(page, real_storage):
     assert page.locator('#dreamscape-app').count() == 1
     assert page.locator('article h1').is_visible()
     assert page.locator('#sidebar').is_visible()
-    assert page.locator('.ds-theme option').count() == 3
+    assert page.locator('.ds-theme option').count() == 10
     assert page.locator('.ds-panel').is_hidden()
     assert page.locator('html').evaluate("e=>e.classList.contains('ds-active')")
-    assert page.locator('#ds-victor').evaluate('e=>e.complete&&e.naturalWidth>0&&getComputedStyle(e).display!="none"')
-    assert page.locator('#ds-victor').bounding_box()['y'] < page.locator('[data-testid="composer-root"]').bounding_box()['y']
+    assert page.locator('#ds-victor').evaluate('e=>getComputedStyle(e).display!="none"&&e.querySelector("canvas").getContext("2d").getImageData(0,0,116,92).data.some((v,i)=>i%4===3&&v>0)')
+    victor_box=page.locator('#ds-victor').bounding_box()
+    composer_box=page.locator('[data-testid="composer-root"]').bounding_box()
+    assert victor_box['y'] < composer_box['y']
+    assert composer_box['x'] <= victor_box['x'] <= composer_box['x']+composer_box['width']*.19
+    assert page.locator('#ds-victor').count() == 1
+    # Natural short patrol should move Victor only within the left part of composer.
+    page.wait_for_timeout(6800)
+    moved_box=page.locator('#ds-victor').bounding_box()
+    assert moved_box['x'] > victor_box['x'] + 4, (moved_box,victor_box)
+    assert moved_box['x'] <= composer_box['x'] + composer_box['width']*.30
     for sel in ['#thread-bottom', '#thread-bottom-container', '.outer-dock']:
         assert page.locator(sel).evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgba(0, 0, 0, 0)', sel
     assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgb(13, 18, 28)'
@@ -76,7 +85,9 @@ def run_tests(page, real_storage):
     page.screenshot(path=str(folder / 'default.png'))
     page.locator('.ds-launch').click()
     assert page.locator('.ds-panel').is_visible()
-    for theme in ['moonlit-castle', 'midnight-tulips', 'moonlit-village']:
+    assert page.locator('.ds-wall-preview').is_visible()
+    assert page.locator('.ds-hint').inner_text().startswith('Changes wallpaper cropping')
+    for theme in ['moonlit-castle', 'midnight-tulips', 'luminous-garden', 'starlit-forest', 'violet-city', 'golden-wildflowers', 'quiet-library', 'chess-at-night', 'piano-nocturne', 'moonlit-village']:
         page.locator('.ds-theme').select_option(theme)
         prop = page.evaluate("document.documentElement.style.getPropertyValue('--ds-wall')")
         assert prop.startswith('url("data:image/webp;base64,'), theme
@@ -98,7 +109,7 @@ def run_tests(page, real_storage):
     page.locator('.ds-upload').set_input_files(str(ROOT / 'assets/wallpapers/midnight-tulips.webp'))
     page.wait_for_timeout(800)
     assert not errors, errors
-    assert page.locator('.ds-theme option').count() == 4
+    assert page.locator('.ds-theme option').count() == 11
     saved_id = page.locator('.ds-theme').input_value()
     assert saved_id.startswith('custom-'), saved_id
     assert page.locator('.ds-delete').is_visible()
@@ -111,14 +122,14 @@ def run_tests(page, real_storage):
         page.add_script_tag(content=SCRIPT)
         page.wait_for_timeout(650)
         assert page.locator('.ds-theme').input_value() == saved_id
-        assert page.locator('.ds-theme option').count() == 4
+        assert page.locator('.ds-theme option').count() == 11
         page.locator('.ds-launch').click()
     else:
         assert page.evaluate(f"window.__dreamscapeTestStores.records.has('{saved_id}')")
         assert saved_id in page.evaluate("window.__dreamscapeTestStores.settings.get('dreamscape-public-v1')")
     page.locator('.ds-delete').click()
     page.wait_for_timeout(200)
-    assert page.locator('.ds-theme option').count() == 3
+    assert page.locator('.ds-theme option').count() == 10
     assert page.locator('.ds-theme').input_value() == 'moonlit-village'
     page.locator('form').evaluate('e=>e.removeAttribute("data-testid")')
     page.wait_for_timeout(400)
@@ -127,7 +138,7 @@ def run_tests(page, real_storage):
     page.wait_for_timeout(250)
     assert page.locator('article h1').is_visible()
     assert not errors, errors
-    print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 3 themes, 7 Victor frames, composer dock, dim, position, upload, save, delete, fallback and resize")
+    print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 10 themes, Victor single-canvas display, composer dock, dim, position, upload, save, delete, fallback and resize")
 
 with Server(('127.0.0.1', 0), Handler) as server:
     threading.Thread(target=server.serve_forever, daemon=True).start()

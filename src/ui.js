@@ -9,9 +9,15 @@
     if(!interfaceRoot)return;
     const select=interfaceRoot.querySelector('.ds-theme');
     select.replaceChildren();
-    const original=document.createElement('optgroup');original.label='Dreamscape Originals';
-    for(const wall of builtins) original.append(new Option(wall.name,wall.id));
-    select.append(original);
+    const groups=new Map();
+    for(const wall of builtins){
+      const label=wall.group||'Dreamscape Originals';
+      if(!groups.has(label)){
+        const optgroup=document.createElement('optgroup');optgroup.label=label;
+        groups.set(label,optgroup);select.append(optgroup);
+      }
+      groups.get(label).append(new Option(wall.name,wall.id));
+    }
     if(customWallpapers.size){
       const custom=document.createElement('optgroup');custom.label='My Wallpapers';
       for(const wall of customWallpapers.values())custom.append(new Option(wall.name,wall.id));
@@ -31,6 +37,12 @@
     interfaceRoot.querySelector('.ds-motion-check').checked=!!settings.motion;
     interfaceRoot.querySelector('.ds-active-check').checked=!!settings.enabled;
     interfaceRoot.querySelector('.ds-delete').hidden=!wallpaper.custom;
+    const preview=interfaceRoot.querySelector('.ds-wall-preview');
+    if(preview){
+      const src=wallpaper.uri||customObjectUrls.get(wallpaper.id);
+      preview.style.backgroundImage=src?`linear-gradient(rgba(2,6,14,.16),rgba(2,6,14,.16)),url("${src}")`:'none';
+      preview.setAttribute('aria-label',wallpaper.name+' preview');
+    }
   }
   function installUI(){
     interfaceRoot=document.createElement('div');interfaceRoot.id='dreamscape-app';
@@ -40,10 +52,12 @@
         <div class="ds-heading"><strong>☾ Dreamscape</strong><button class="ds-close" type="button" aria-label="Close settings">×</button></div>
         <label for="ds-theme">Wallpaper</label>
         <select class="ds-theme" id="ds-theme"></select>
+        <div class="ds-wall-preview" role="img" aria-label="Selected wallpaper preview"></div>
         <label for="ds-dim">Darken wallpaper <output class="ds-dim-value"></output></label>
         <input class="ds-dim" id="ds-dim" type="range" min="0" max="75" step="1">
         <label for="ds-position">Horizontal position <output class="ds-position-value"></output></label>
         <input class="ds-position" id="ds-position" type="range" min="0" max="100" step="5">
+        <span class="ds-hint">Changes wallpaper cropping: 0% left · 50% center · 100% right.</span>
         <div class="ds-actions">
           <label class="ds-upload-label" for="ds-upload">＋ Add wallpaper</label>
           <input class="ds-upload" id="ds-upload" type="file" accept="image/png,image/jpeg,image/webp" hidden>

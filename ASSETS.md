@@ -1,14 +1,28 @@
 # Artwork and asset notes
 
-Dreamscape distributes only the following **project-specific** bundled images:
+Dreamscape bundles **10 curated wallpapers** and **Victor**, a gray pixel cat.
 
-- `assets/wallpapers/moonlit-village.webp` — original AI-assisted moonlit pixel wallpaper created for this project.
-- `assets/wallpapers/moonlit-castle.webp` — original AI-assisted moonlit castle pixel wallpaper created for this project.
-- `assets/wallpapers/midnight-tulips.webp` — original AI-assisted midnight tulip wallpaper created for this project.
-- `assets/pets/victor/*.webp` — Victor, the gray pixel cat, provided by the project creator and adapted as small animation frames.
+## Original pixel and atmospheric wallpapers
 
-**Asset license:** the MIT license applies to *code*, not these images. The creator has permitted inclusion and redistribution of the bundled assets **as part of Dreamscape**. No separate permission for extracting, reselling, or repackaging the image assets is implied. Contributors should not add third-party artwork without clear evidence of redistribution permission.
+| Wallpaper | Origin |
+| --- | --- |
+| Moonlit Village | Original AI-assisted illustration made for this project |
+| Moonlit Castle | Original AI-assisted illustration made for this project |
+| Midnight Tulips | Original AI-assisted illustration made for this project |
+| Luminous Garden | Original procedurally illustrated dark botanical scene |
+| Starlit Forest | Original procedurally illustrated forest nightscape |
+| Violet City | Original procedurally illustrated pixel cityscape |
+| Golden Wildflowers | Original procedurally illustrated golden garden |
+| Quiet Library | Original procedurally illustrated reading desk |
+| Chess at Night | Original procedurally illustrated chess-themed scene |
+| Piano Nocturne | Original procedurally illustrated piano scene |
 
-The public bundle intentionally **excludes** the personal red Spidey pet and third-party wallpapers, including recognizable media characters or unlicensed photographs. People may upload their own wallpaper files locally; those files are not shared or included in the repository.
+The last seven wallpapers can be reproduced from `tools/generate_wallpapers.py` using Pillow and NumPy. The original three are retained as `.webp` files.
 
-If you believe an asset infringes your rights, please open an issue with the asset path and ownership details.
+- `assets/pets/victor/*.webp`: Victor, the gray pixel cat, provided by the project creator and adapted into idle, walk and sleep animation frames.
+
+**Asset terms:** The MIT license applies to project *code*, not these visual assets. The assets are bundled for use and redistribution **with Dreamscape**; separate extraction or resale is not automatically permitted. Contributors should not add third-party art without clear redistribution rights.
+
+The public bundle intentionally excludes personal Spidey art and third-party wallpapers (including recognizable media characters and photos with unverified licenses). Users can import their own images privately; uploads stay in their browser and are not published to this repository.
+
+If you believe an asset infringes your rights, please open an issue identifying the asset and relevant rights information.

@@ -111,8 +111,12 @@ html.ds-active .ds-composer textarea {
 #dreamscape-app .ds-panel small {display: block;line-height: 1.5;opacity: .65;margin-top: 14px;}
 #dreamscape-app .ds-status {font-size: 12px;line-height: 1.5;color: #f2d8a3;margin: 10px 0;}
 #ds-victor {
-  position: fixed;width: 48px;height: 48px;object-fit: contain;image-rendering: pixelated;
+  position: fixed;width: 58px;height: 46px;image-rendering: pixelated;
   pointer-events: none;z-index: 2147482999;
   filter: drop-shadow(0 2px 2px #0008);
 }
+#ds-victor canvas {width:100%;height:100%;display:block;image-rendering:pixelated;}
 @media (prefers-reduced-motion: reduce){#ds-victor {transition: none !important;}}
+
+#dreamscape-app .ds-wall-preview {height:116px;width:100%;margin:11px 0 15px;border-radius:10px;border:1px solid #ffffff23;background-color:#0a1120;background-position:center;background-size:cover;}
+#dreamscape-app .ds-hint {display:block;color:#bcc7d7;font-size:11px;line-height:1.35;margin:5px 0 12px;}
