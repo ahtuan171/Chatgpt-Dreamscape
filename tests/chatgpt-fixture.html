@@ -8,9 +8,9 @@ main{margin-left:250px;min-height:100vh;background:#171717;padding:28px 10vw 180
 #thread-bottom-container{width:100%;background:#000;min-height:100px;display:flex;align-items:center;justify-content:center}
 .outer-dock{background:#000;width:100%;height:90px;display:flex;justify-content:center;align-items:center}
 form{width:min(750px,85%);background:#252525;border-radius:20px;padding:12px 22px;min-height:64px;display:flex;align-items:center}
-#prompt-textarea{flex:1;outline:none;min-height:28px;padding:8px;color:white;font-size:15px}
+#prompt-textarea{flex:1;outline:none;min-height:28px;padding:8px;color:white;font-size:15px}.effort-control{background:transparent;border:0;color:white;margin-right:14px;padding:8px;cursor:pointer;font-size:15px}
 </style></head><body>
 <div id="root"><aside id="sidebar"><h2>ChatGPT</h2><p>New Chat</p><p>Dreamscape testing</p></aside>
 <main><article><h1>Dreamscape preview</h1><p>Your ChatGPT conversation must remain visible and readable above the wallpaper.</p><p>There must be no black rectangular background stretching across the composer dock.</p></article></main>
-<div id="thread-bottom"><div id="thread-bottom-container"><div class="outer-dock"><form data-testid="composer-root"><div id="prompt-textarea" contenteditable="true" role="textbox">Ask ChatGPT</div><button type="button">➤</button></form></div></div></div>
+<div id="thread-bottom"><div id="thread-bottom-container"><div class="outer-dock"><form data-testid="composer-root"><div id="prompt-textarea" contenteditable="true" role="textbox">Ask ChatGPT</div><button type="button" class="effort-control" aria-label="Thinking effort"><span>High</span>⌄</button><button type="button">➤</button></form></div></div></div>
 </div></body></html>
