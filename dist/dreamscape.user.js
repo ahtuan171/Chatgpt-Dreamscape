@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT Dreamscape
 // @namespace    https://github.com/ahtuan171/Chatgpt-Dreamscape
-// @version      0.3.2
+// @version      0.3.3
 // @description  Personal wallpapers and Victor the gray pixel companion for ChatGPT desktop.
 // @match        https://chatgpt.com/*
 // @run-at       document-idle
@@ -278,26 +278,54 @@ const STYLES="/* Background is on the document, NOT a full-screen positioned ove
     for(const e of activeDockNodes)e.classList.remove('ds-dock');
     activeDockNodes=[];
   }
+  // Bottom dock wrappers can be replaced or reparented when the composer expands
+  // (for example, an image attachment). Do not depend on the composer identity.
+  // Mark only compact ancestors around the input: never mark the chat transcript.
   function markDock(el){
-    clearDockClasses();
-    if(!el)return;
-    let node=el.parentElement;
-    const c=el.getBoundingClientRect();
-    let depth=0;
-    while(node && depth<8 && node!==document.body && node!==document.documentElement){
-      if(node.matches('main,[role="main"],#root,#sidebar,[data-testid="sidebar"]'))break;
-      const rect=node.getBoundingClientRect();
-      // Limit transparency to short composer wrappers, never chat turns or large panels.
-      if(rect.height>Math.max(420,c.height+150) || rect.top<c.top-180) break;
-      node.classList.add('ds-dock');activeDockNodes.push(node);
-      node=node.parentElement;depth++;
-    }
-    for(const selector of ['#thread-bottom','#thread-bottom-container']){
-      const e=document.querySelector(selector);
-      if(e && e.contains(el) && !activeDockNodes.includes(e)){
-        e.classList.add('ds-dock');activeDockNodes.push(e);
+    const next=new Set();
+    if(el){
+      const c=el.getBoundingClientRect();
+      let node=el.parentElement;
+      let depth=0;
+      while(node && depth<18 && node!==document.body && node!==document.documentElement){
+        if(node.matches('main,[role="main"],#root,#sidebar,[data-testid="sidebar"]'))break;
+        const rect=node.getBoundingClientRect();
+        // A real dock can span the full width, but must be near the composer
+        // and short enough that it cannot be the whole conversation viewport.
+        if(rect.height>Math.max(540,c.height+230) ||
+           rect.top<c.top-Math.max(220,c.height+50) ||
+           rect.bottom<c.top-8)break;
+        next.add(node);
+        node=node.parentElement;
+        depth++;
+      }
+      for(const selector of ['#thread-bottom','#thread-bottom-container']){
+        const e=document.querySelector(selector);
+        if(e&&e.contains(el)){
+          const r=e.getBoundingClientRect();
+          if(r.height<=Math.max(540,c.height+230) && r.top>=c.top-Math.max(220,c.height+50))next.add(e);
+        }
+      }
+      // Some ChatGPT layouts paint the black gradient in a decorative sibling
+      // rather than on a composer ancestor. Only neutralize non-interactive,
+      // positioned backdrop layers that overlap the dock; never touch messages.
+      for(const wrapper of [...next]){
+        for(const sibling of wrapper.children){
+          if(sibling===el||sibling.contains(el)||sibling.matches('script,style'))continue;
+          const style=getComputedStyle(sibling);
+          if(!['absolute','fixed'].includes(style.position))continue;
+          if(style.pointerEvents!=='none'&&sibling.getAttribute('aria-hidden')!=='true')continue;
+          const r=sibling.getBoundingClientRect();
+          if(r.width>=c.width*.9 && r.height>0 &&
+             r.height<=Math.max(540,c.height+230) &&
+             r.top<c.bottom && r.bottom>c.top-140)next.add(sibling);
+        }
       }
     }
+    const previous=new Set(activeDockNodes);
+    for(const e of previous)if(!next.has(e))e.classList.remove('ds-dock');
+    for(const e of next)if(!previous.has(e))e.classList.add('ds-dock');
+    activeDockNodes=[...next];
   }
   function syncComposer(){
     queued=false;
@@ -307,8 +335,10 @@ const STYLES="/* Background is on the document, NOT a full-screen positioned ove
       composer=next;
       if(resizeObserver)resizeObserver.disconnect();
       if(composer){composer.classList.add('ds-composer');resizeObserver?.observe(composer);}
-      markDock(composer);
     }
+    // Expansion/reparenting can change opaque wrappers while keeping the same
+    // form element, so rediscover dock ancestors on every scheduled sync.
+    markDock(composer);
     positionVictor();
   }
   function scheduleSync(){if(queued)return;queued=true;requestAnimationFrame(syncComposer);}
