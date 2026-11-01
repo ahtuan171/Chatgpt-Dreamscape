@@ -22,13 +22,5 @@
     "file": "assets/wallpapers/moonlit-romance.webp",
     "group": "Moonlit & Fantasy",
     "appearance": "dark"
-  },
-  {
-    "id": "vintage-letter",
-    "name": "Vintage Letter",
-    "dim": 8,
-    "file": "assets/wallpapers/vintage-letter.webp",
-    "group": "Classical Paper",
-    "appearance": "light"
   }
 ]

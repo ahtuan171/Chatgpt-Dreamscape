@@ -61,7 +61,7 @@ def run_tests(page, real_storage):
     assert page.locator('#dreamscape-app').count() == 1
     assert page.locator('article h1').is_visible()
     assert page.locator('#sidebar').is_visible()
-    assert page.locator('.ds-theme option').count() == 4
+    assert page.locator('.ds-theme option').count() == 3
     assert page.locator('.ds-panel').is_hidden()
     assert page.locator('html').evaluate("e=>e.classList.contains('ds-active')")
     assert page.locator('#ds-victor').evaluate('e=>getComputedStyle(e).display!="none"&&e.querySelector("canvas").getContext("2d").getImageData(0,0,116,92).data.some((v,i)=>i%4===3&&v>0)')
@@ -94,20 +94,14 @@ def run_tests(page, real_storage):
     assert page.locator('.ds-panel').is_visible()
     assert page.locator('.ds-wall-preview').is_visible()
     assert page.locator('.ds-hint').inner_text().startswith('Changes wallpaper cropping')
-    for theme in ['moonlit-castle', 'midnight-tulips', 'moonlit-romance', 'vintage-letter']:
+    for theme in ['moonlit-castle', 'midnight-tulips', 'moonlit-romance']:
         page.locator('.ds-theme').select_option(theme)
         prop = page.evaluate("document.documentElement.style.getPropertyValue('--ds-wall')")
         assert prop.startswith('url("data:image/webp;base64,'), theme
-    page.locator('.ds-theme').select_option('vintage-letter')
-    assert page.locator('html').evaluate("e=>e.classList.contains('ds-parchment')")
-    assert page.locator('.ds-overlay-label').inner_text() == 'Soften paper'
-    assert page.locator('article h1').evaluate('e=>getComputedStyle(e).color') == 'rgb(45, 33, 25)'
-    assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).color') == 'rgb(45, 33, 25)'
-    assert page.locator('#sidebar').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgba(43, 34, 27, 0.98)'
-    page.screenshot(path=str(folder / 'vintage-letter.png'))
     page.locator('.ds-theme').select_option('moonlit-romance')
     assert not page.locator('html').evaluate("e=>e.classList.contains('ds-parchment')")
     assert page.locator('.ds-overlay-label').inner_text() == 'Darken wallpaper'
+    assert page.locator('article h1').evaluate('e=>getComputedStyle(e).color') != 'rgb(45, 33, 25)'
     page.screenshot(path=str(folder / 'moonlit-romance.png'))
     page.locator('.ds-theme').select_option('midnight-tulips')
     page.locator('.ds-dim').fill('19')
@@ -132,7 +126,7 @@ def run_tests(page, real_storage):
     page.locator('.ds-upload').set_input_files(str(ROOT / 'assets/wallpapers/midnight-tulips.webp'))
     page.wait_for_timeout(800)
     assert not errors, errors
-    assert page.locator('.ds-theme option').count() == 5
+    assert page.locator('.ds-theme option').count() == 4
     saved_id = page.locator('.ds-theme').input_value()
     assert saved_id.startswith('custom-'), saved_id
     assert page.locator('.ds-delete').is_visible()
@@ -145,14 +139,14 @@ def run_tests(page, real_storage):
         page.add_script_tag(content=SCRIPT)
         page.wait_for_timeout(650)
         assert page.locator('.ds-theme').input_value() == saved_id
-        assert page.locator('.ds-theme option').count() == 5
+        assert page.locator('.ds-theme option').count() == 4
         page.locator('.ds-launch').click()
     else:
         assert page.evaluate(f"window.__dreamscapeTestStores.records.has('{saved_id}')")
         assert saved_id in page.evaluate("window.__dreamscapeTestStores.settings.get('dreamscape-public-v1')")
     page.locator('.ds-delete').click()
     page.wait_for_timeout(200)
-    assert page.locator('.ds-theme option').count() == 4
+    assert page.locator('.ds-theme option').count() == 3
     assert page.locator('.ds-theme').input_value() == 'moonlit-castle'
     page.locator('form').evaluate('e=>e.removeAttribute("data-testid")')
     page.wait_for_timeout(400)
@@ -161,7 +155,7 @@ def run_tests(page, real_storage):
     page.wait_for_timeout(250)
     assert page.locator('article h1').is_visible()
     assert not errors, errors
-    print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 4 themes, Victor right-side facing changes, light parchment, single-canvas display, composer dock, dim, position, upload, save, delete, fallback and resize")
+    print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 3 themes, Victor right-side facing changes, single-canvas display, composer dock, dim, position, upload, save, delete, fallback and resize")
 
 def test_existing_selection_migration(browser, url, use_mock_storage):
     """Retired themes fall back, while saved custom wallpapers remain selected."""
@@ -172,12 +166,13 @@ def test_existing_selection_migration(browser, url, use_mock_storage):
     else:
         page.goto(url)
     page.evaluate("""() => localStorage.setItem('dreamscape-public-v1',
-        JSON.stringify({enabled:true, theme:'moonlit-village', victor:true,
+        JSON.stringify({enabled:true, theme:'vintage-letter', victor:true,
                         motion:true, dimOverrides:{}, positionOverrides:{}}))""")
     page.add_script_tag(content=SCRIPT)
     page.wait_for_function("() => document.querySelector('.ds-theme')?.value === 'moonlit-castle'")
-    assert page.locator('.ds-theme option').count() == 4
+    assert page.locator('.ds-theme option').count() == 3
     assert page.evaluate("JSON.parse(localStorage.getItem('dreamscape-public-v1')).theme") == 'moonlit-castle'
+    assert not page.locator('html').evaluate("e=>e.classList.contains('ds-parchment')")
     page.close()
 
     # Existing personal wallpaper is not inadvertently replaced by the fallback.
@@ -214,10 +209,10 @@ def test_existing_selection_migration(browser, url, use_mock_storage):
         })""")
     page.add_script_tag(content=SCRIPT)
     page.wait_for_function("() => document.querySelector('.ds-theme')?.value === 'custom-kept-by-upgrade'")
-    assert page.locator('.ds-theme option').count() == 5
+    assert page.locator('.ds-theme option').count() == 4
     assert page.evaluate("JSON.parse(localStorage.getItem('dreamscape-public-v1')).theme") == 'custom-kept-by-upgrade'
     page.close()
-    print('PASS: removed wallpaper migrates to Moonlit Castle; existing personal wallpaper preserved')
+    print('PASS: retired Vintage Letter migrates to Moonlit Castle; existing personal wallpaper preserved')
 
 with Server(('127.0.0.1', 0), Handler) as server:
     threading.Thread(target=server.serve_forever, daemon=True).start()

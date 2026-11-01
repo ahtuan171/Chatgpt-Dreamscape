@@ -13,9 +13,9 @@
     const src=wallpaper.uri||customObjectUrls.get(wallpaper.id);
     if(src)document.documentElement.style.setProperty('--ds-wall',`url("${src}")`);
     document.documentElement.style.setProperty('--ds-dim',String(wallpaperDim(wallpaper.id)/100));
-    const paper=!!settings.enabled&&wallpaper.appearance==='light';
-    document.documentElement.classList.toggle('ds-parchment',paper);
-    document.documentElement.style.setProperty('--ds-overlay-rgb',paper?'255,248,235':'2,6,14');
+    // Built-in themes share a dark overlay, keeping conversation text readable.
+    document.documentElement.classList.remove('ds-parchment');
+    document.documentElement.style.setProperty('--ds-overlay-rgb','2,6,14');
     document.documentElement.style.setProperty('--ds-position',wallpaperPosition(wallpaper.id)+'%');
     document.documentElement.classList.toggle('ds-active',!!settings.enabled);
     if(victorElement)positionVictor();

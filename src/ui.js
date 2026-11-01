@@ -31,7 +31,7 @@
     interfaceRoot.querySelector('.ds-theme').value=wallpaper.id;
     interfaceRoot.querySelector('.ds-dim').value=wallpaperDim(wallpaper.id);
     interfaceRoot.querySelector('.ds-dim-value').textContent=wallpaperDim(wallpaper.id)+'%';
-    interfaceRoot.querySelector('.ds-overlay-label').textContent=wallpaper.appearance==='light'?'Soften paper':'Darken wallpaper';
+    interfaceRoot.querySelector('.ds-overlay-label').textContent='Darken wallpaper';
     interfaceRoot.querySelector('.ds-position').value=wallpaperPosition(wallpaper.id);
     interfaceRoot.querySelector('.ds-position-value').textContent=wallpaperPosition(wallpaper.id)+'%';
     interfaceRoot.querySelector('.ds-victor-check').checked=!!settings.victor;
