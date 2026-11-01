@@ -23,7 +23,7 @@ jobs:
           python-version: '3.12'
       - name: Install Playwright
         run: |
-          python -m pip install playwright
+          python -m pip install playwright pillow
           python -m playwright install --with-deps chromium
       - name: Smoke test
         run: python tests/test_browser.py
