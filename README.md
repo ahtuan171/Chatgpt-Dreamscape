@@ -2,15 +2,15 @@
 
 **Make your ChatGPT feel like home.** Dreamscape is an independent, open-source userscript that adds atmospheric wallpapers and **Victor**, a tiny gray pixel cat, to the desktop ChatGPT web interface.
 
-> **Early public preview · v0.2.1.** This is a community customization, not an official OpenAI/ChatGPT feature. ChatGPT's page structure can change; if you spot an issue, please open a GitHub issue.
+> **Early public preview · v0.3.0.** This is a community customization, not an official OpenAI/ChatGPT feature. ChatGPT's page structure can change; if you spot an issue, please open a GitHub issue.
 
 ## ✨ Features
 
-- **2 built-in wallpapers**: Moonlit Castle and Midnight Tulips. The collection is intentionally small while we prepare more original artwork; both have dark areas to keep conversations readable.
+- **4 built-in wallpapers**: Moonlit Castle, Midnight Tulips, Prince & Princess, and Vintage Letter. The first three use light text over dark artwork; Vintage Letter switches to a parchment theme with dark ink text and a cream composer.
 - **Your own wallpapers**: import PNG, JPEG or WebP; image processing and storage happen *in your browser* via IndexedDB.
 - **Personal controls**: wallpaper previews, per-wallpaper dimming and horizontal cropping (0% left / 50% center / 100% right when cropped).
-- **Victor**: the gray pixel cat stays on the **left edge of the composer**, takes a small walk (up to 80px), rests, blinks, and sleeps. Turn him off at any time.
-- **Lightweight, optional styling**: the sidebar remains readable and the message composer stays dark. A toggle restores ChatGPT's default styling.
+- **Victor**: the gray pixel cat starts near the **upper-right corner of the composer**, is approximately 10% larger, walks a short stretch toward the center, turns to face the opposite direction before returning, and rests or sleeps. Turn him off at any time.
+- **Lightweight, optional styling**: the sidebar remains readable. The composer stays dark for night wallpapers and becomes cream-colored with Vintage Letter. A toggle restores ChatGPT's default styling.
 - **Privacy-first**: no analytics, no external image uploads, no chat-message collection, no account access beyond the web page needed for styling.
 
 ## 🚀 Install (desktop only; no terminal)
@@ -33,7 +33,7 @@ Imported images and preferences belong to the specific browser profile and websi
 
 ## 🐈 Meet Victor
 
-Victor is the **only** bundled pet. He stays near the left side of the message box, patrols a short stretch, and rests between movements. His animations are quiet, optional and respect your system's reduced-motion preference. The personal red Spidey sprite is **not included** in the public version. Previous users should disable all old Dreamscape scripts to avoid clashes.
+Victor is the **only** bundled pet. He stays near the right corner of the message box, walks toward the center, turns naturally to walk back, and rests between movements. His animations are quiet, optional and respect your system's reduced-motion preference. The personal red Spidey sprite is **not included** in the public version. Previous users should disable all old Dreamscape scripts to avoid clashes.
 
 ## 🛠️ For contributors
 
