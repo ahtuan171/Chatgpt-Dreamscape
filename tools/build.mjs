@@ -13,7 +13,7 @@ const chunks=['storage','theme','pet','adapter','ui','main'].map(name=>read(`src
 const header=`// ==UserScript==
 // @name         ChatGPT Dreamscape
 // @namespace    https://github.com/ahtuan171/Chatgpt-Dreamscape
-// @version      0.3.2
+// @version      0.3.3
 // @description  Personal wallpapers and Victor the gray pixel companion for ChatGPT desktop.
 // @match        https://chatgpt.com/*
 // @run-at       document-idle
