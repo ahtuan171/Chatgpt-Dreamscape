@@ -2,15 +2,15 @@
 
 **Make your ChatGPT feel like home.** Dreamscape is an independent, open-source userscript that adds atmospheric wallpapers and **Victor**, a tiny gray pixel cat, to the desktop ChatGPT web interface.
 
-> **Early public preview · v0.3.1.** This is a community customization, not an official OpenAI/ChatGPT feature. ChatGPT's page structure can change; if you spot an issue, please open a GitHub issue.
+> **Early public preview · v0.3.0.** This is a community customization, not an official OpenAI/ChatGPT feature. ChatGPT's page structure can change; if you spot an issue, please open a GitHub issue.
 
 ## ✨ Features
 
-- **3 built-in wallpapers**: Moonlit Castle, Midnight Tulips, and Prince & Princess. All three use light chat text over dark atmospheric artwork.
+- **4 built-in wallpapers**: Moonlit Castle, Midnight Tulips, Prince & Princess, and Vintage Letter. The first three retain white text over dark art; Vintage Letter switches to a sepia paper theme with dark ink-like chat text and a cream composer.
 - **Your own wallpapers**: import PNG, JPEG or WebP; image processing and storage happen *in your browser* via IndexedDB.
-- **Personal controls**: wallpaper previews, per-wallpaper darkening and horizontal cropping (0% left / 50% center / 100% right when cropped).
+- **Personal controls**: wallpaper previews, per-wallpaper contrast overlay (darken for night themes or soften for paper) and horizontal cropping (0% left / 50% center / 100% right when cropped).
 - **Victor**: the gray pixel cat stays near the **upper-right corner of the composer**, is about 10% larger, walks a short distance toward the center (up to 80px), turns to face back before returning, rests, blinks, and sleeps. Turn him off at any time.
-- **Lightweight, optional styling**: the sidebar stays readable; the composer stays dark on the three built-in themes. A toggle restores ChatGPT's default styling.
+- **Lightweight, optional styling**: the sidebar stays readable; the composer is dark on night themes and cream-colored on Vintage Letter. A toggle restores ChatGPT's default styling.
 - **Privacy-first**: no analytics, no external image uploads, no chat-message collection, no account access beyond the web page needed for styling.
 
 ## 🚀 Install (desktop only; no terminal)
