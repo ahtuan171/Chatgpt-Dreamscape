@@ -2,7 +2,7 @@
 html.ds-active {
   color-scheme: dark !important;
   background: #091326 !important;
-  background-image: linear-gradient(rgba(2, 6, 14, var(--ds-dim, .18)),rgba(2, 6, 14, var(--ds-dim, .18))),var(--ds-wall) !important;
+  background-image: linear-gradient(rgba(var(--ds-overlay-rgb, 2, 6, 14), var(--ds-dim, .18)),rgba(var(--ds-overlay-rgb, 2, 6, 14), var(--ds-dim, .18))),var(--ds-wall) !important;
   background-size: cover !important;
   background-position: var(--ds-position, 50%) center !important;
   background-repeat: no-repeat !important;
@@ -111,7 +111,7 @@ html.ds-active .ds-composer textarea {
 #dreamscape-app .ds-panel small {display: block;line-height: 1.5;opacity: .65;margin-top: 14px;}
 #dreamscape-app .ds-status {font-size: 12px;line-height: 1.5;color: #f2d8a3;margin: 10px 0;}
 #ds-victor {
-  position: fixed;width: 58px;height: 46px;image-rendering: pixelated;
+  position: fixed;width: 64px;height: 51px;image-rendering: pixelated;
   pointer-events: none;z-index: 2147482999;
   filter: drop-shadow(0 2px 2px #0008);
 }
@@ -120,3 +120,63 @@ html.ds-active .ds-composer textarea {
 
 #dreamscape-app .ds-wall-preview {height:116px;width:100%;margin:11px 0 15px;border-radius:10px;border:1px solid #ffffff23;background-color:#0a1120;background-position:center;background-size:cover;}
 #dreamscape-app .ds-hint {display:block;color:#bcc7d7;font-size:11px;line-height:1.35;margin:5px 0 12px;}
+
+/* Vintage Letter is a true light/ink theme, not black text drawn over a dark UI. */
+html.ds-active.ds-parchment {
+  color-scheme: light !important;
+  --text-primary: #2d2119;
+  --text-secondary: #493a2b;
+  --text-tertiary: #655340;
+  --text-quaternary: #76614d;
+  --main-surface-primary: transparent;
+  --main-surface-secondary: rgba(245, 228, 198, .78);
+  --main-surface-tertiary: rgba(230, 206, 174, .72);
+  --surface-hover: rgba(100, 69, 39, .10);
+  --border-light: rgba(97, 64, 39, .22);
+  color: #2d2119 !important;
+}
+html.ds-active.ds-parchment body,
+html.ds-active.ds-parchment main,
+html.ds-active.ds-parchment [role="main"],
+html.ds-active.ds-parchment #thread,
+html.ds-active.ds-parchment [data-testid="conversation-turns"] {
+  color: #2d2119 !important;
+}
+/* Make primary body copy readable without overriding code syntax highlighting. */
+html.ds-active.ds-parchment main :is(p,h1,h2,h3,h4,h5,h6,li,blockquote,th,td),
+html.ds-active.ds-parchment main .text-token-text-primary,
+html.ds-active.ds-parchment main .text-token-text-secondary {
+  color: #2d2119 !important;
+}
+html.ds-active.ds-parchment main a:not(.ds-launch) {color:#64472c !important;text-decoration-color:#8d6c49;}
+html.ds-active.ds-parchment #sidebar,
+html.ds-active.ds-parchment [data-testid="sidebar"] {
+  background: rgba(43,34,27,.98) !important;
+  color: #f3e6d5 !important;
+  --text-primary: #f3e6d5;
+  --text-secondary: #d9cbb7;
+}
+html.ds-active.ds-parchment .ds-composer,
+html.ds-active.ds-parchment [data-testid="composer-root"] {
+  background: rgba(247,236,218,.96) !important;
+  color: #2d2119 !important;
+  border: 1px solid rgba(95,66,42,.52) !important;
+  box-shadow: 0 6px 24px rgba(62,44,28,.18) !important;
+  --text-primary: #2d2119;
+  --text-secondary: #584431;
+}
+html.ds-active.ds-parchment .ds-composer [contenteditable="true"],
+html.ds-active.ds-parchment .ds-composer textarea,
+html.ds-active.ds-parchment [data-testid="composer-root"] [contenteditable="true"] {
+  color: #2d2119 !important;
+  caret-color: #3c281b !important;
+}
+html.ds-active.ds-parchment #dreamscape-app .ds-panel {
+  background: #382b22;
+  color: #f5e6ce;
+}
+html.ds-active.ds-parchment #dreamscape-app .ds-launch {
+  background: #3b2e23;
+  color: #f2dcc0;
+  border-color: #ab8c65;
+}

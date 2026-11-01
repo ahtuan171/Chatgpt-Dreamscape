@@ -31,6 +31,7 @@
     interfaceRoot.querySelector('.ds-theme').value=wallpaper.id;
     interfaceRoot.querySelector('.ds-dim').value=wallpaperDim(wallpaper.id);
     interfaceRoot.querySelector('.ds-dim-value').textContent=wallpaperDim(wallpaper.id)+'%';
+    interfaceRoot.querySelector('.ds-overlay-label').textContent=wallpaper.appearance==='light'?'Soften paper':'Darken wallpaper';
     interfaceRoot.querySelector('.ds-position').value=wallpaperPosition(wallpaper.id);
     interfaceRoot.querySelector('.ds-position-value').textContent=wallpaperPosition(wallpaper.id)+'%';
     interfaceRoot.querySelector('.ds-victor-check').checked=!!settings.victor;
@@ -53,7 +54,7 @@
         <label for="ds-theme">Wallpaper</label>
         <select class="ds-theme" id="ds-theme"></select>
         <div class="ds-wall-preview" role="img" aria-label="Selected wallpaper preview"></div>
-        <label for="ds-dim">Darken wallpaper <output class="ds-dim-value"></output></label>
+        <label for="ds-dim"><span class="ds-overlay-label">Darken wallpaper</span> <output class="ds-dim-value"></output></label>
         <input class="ds-dim" id="ds-dim" type="range" min="0" max="75" step="1">
         <label for="ds-position">Horizontal position <output class="ds-position-value"></output></label>
         <input class="ds-position" id="ds-position" type="range" min="0" max="100" step="5">

@@ -6,14 +6,14 @@ const read=p=>fs.readFileSync(path.join(repo,p),'utf8');
 const b64=p=>fs.readFileSync(path.join(repo,p)).toString('base64');
 const manifest=JSON.parse(read('assets/wallpapers/manifest.json'));
 const petManifest=JSON.parse(read('assets/pets/victor/manifest.json'));
-const wallpapers=manifest.map(w=>({id:w.id,name:w.name,dim:w.dim,group:w.group,uri:'data:image/webp;base64,'+b64(w.file)}));
+const wallpapers=manifest.map(w=>({id:w.id,name:w.name,dim:w.dim,group:w.group,appearance:w.appearance||'dark',uri:'data:image/webp;base64,'+b64(w.file)}));
 const victor=Object.fromEntries(Object.entries(petManifest).map(([kind,frames])=>[kind,frames.map(file=>'data:image/webp;base64,'+b64(file))]));
 const css=read('src/theme.css');
 const chunks=['storage','theme','pet','adapter','ui','main'].map(name=>read(`src/${name}.js`));
 const header=`// ==UserScript==
 // @name         ChatGPT Dreamscape
 // @namespace    https://github.com/ahtuan171/Chatgpt-Dreamscape
-// @version      0.2.1
+// @version      0.3.0
 // @description  Personal wallpapers and Victor the gray pixel companion for ChatGPT desktop.
 // @match        https://chatgpt.com/*
 // @run-at       document-idle
