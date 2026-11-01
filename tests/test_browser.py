@@ -247,6 +247,69 @@ def test_existing_selection_migration(browser, url, use_mock_storage):
     page.close()
     print('PASS: retired Vintage Letter migrates to Moonlit Castle; existing personal wallpaper preserved')
 
+def test_attachment_dock_reparent(browser, url, use_mock_storage):
+    """Regression: same composer element, new opaque dock wrappers and a backdrop sibling."""
+    from io import BytesIO
+    from PIL import Image
+    page = browser.new_page(viewport={'width':1600,'height':900})
+    errors = []
+    page.on('pageerror', lambda e: errors.append(str(e)))
+    if use_mock_storage:
+        page.set_content(FIXTURE)
+        page.evaluate(STORAGE_SHIM)
+    else:
+        page.goto(url)
+    page.add_script_tag(content=SCRIPT)
+    page.wait_for_function("() => !!document.querySelector('#dreamscape-app')")
+    page.wait_for_timeout(350)
+    # Pixel outside the composer and inside the opaque strip introduced below.
+    original = Image.open(BytesIO(page.screenshot())).convert('RGB').getpixel((310, 710))
+    page.evaluate('''() => {
+      const form=document.querySelector('form[data-testid="composer-root"]');
+      const dock=document.createElement('div');
+      dock.className='new-black-dock';
+      dock.style.cssText='position:fixed;left:14px;right:14px;bottom:0;height:275px;background:#000;display:flex;align-items:center;justify-content:center;z-index:50;';
+      const overlay=document.createElement('div');
+      overlay.className='decorative-dock-background';
+      overlay.setAttribute('aria-hidden','true');
+      overlay.style.cssText='position:absolute;inset:0;background:#000;pointer-events:none;z-index:0;';
+      dock.appendChild(overlay);
+      let node=dock;
+      for(let i=0;i<12;i++){
+        const inner=document.createElement('div');
+        inner.className='nested-dark n'+i;
+        inner.style.cssText='position:relative;background:#000;width:100%;height:100%;display:flex;align-items:center;justify-content:center;';
+        node.appendChild(inner);node=inner;
+      }
+      form.style.cssText='min-height:245px;z-index:1;';
+      node.appendChild(form);
+      document.querySelector('.outer-dock').remove();
+      document.querySelector('#root').appendChild(dock);
+    }''')
+    page.wait_for_timeout(450)
+    assert page.locator('form[data-testid="composer-root"]').count() == 1
+    for selector in ['.new-black-dock', '.nested-dark', '.decorative-dock-background']:
+        colors=page.locator(selector).evaluate_all('es=>es.map(e=>getComputedStyle(e).backgroundColor)')
+        assert all(x=='rgba(0, 0, 0, 0)' for x in colors), (selector, colors)
+    assert page.locator('.nested-dark').count() == 12
+    assert page.locator('article').evaluate('e=>!e.classList.contains("ds-dock")')
+    assert page.locator('article h1').is_visible()
+    assert page.locator('#ds-victor').is_visible()
+    assert page.locator('form').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgba(12, 18, 30, 0.58)'
+    output=ROOT/'tests/screenshots/attachment-dock-regression.png'
+    page.screenshot(path=str(output))
+    after=Image.open(output).convert('RGB').getpixel((310,710))
+    assert max(abs(a-b) for a,b in zip(original,after))<=3, (original,after)
+    # Same form expands again; no new composer element is created.
+    page.locator('form').evaluate('e=>e.style.minHeight="275px"')
+    page.locator('.new-black-dock').evaluate('e=>e.style.height="325px"')
+    page.wait_for_timeout(350)
+    assert page.locator('.decorative-dock-background').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgba(0, 0, 0, 0)'
+    assert not errors, errors
+    print('PASS: reparented and expanded composer; 12 opaque ancestors and black decorative sibling transparent (pixel + DOM checks)')
+    page.close()
+
+
 with Server(('127.0.0.1', 0), Handler) as server:
     threading.Thread(target=server.serve_forever, daemon=True).start()
     url = f'http://127.0.0.1:{server.server_address[1]}/tests/chatgpt-fixture.html'
@@ -266,5 +329,6 @@ with Server(('127.0.0.1', 0), Handler) as server:
             print('NOTE: browser navigation restricted; using about:blank fixture with simulated storage. Native IndexedDB must be tested in CI.')
         run_tests(page, real_storage)
         test_existing_selection_migration(browser, url, not real_storage)
+        test_attachment_dock_reparent(browser, url, not real_storage)
         browser.close()
     server.shutdown()
