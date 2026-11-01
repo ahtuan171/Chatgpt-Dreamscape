@@ -28,7 +28,7 @@ html.ds-active #sidebar,
 html.ds-active [data-testid="sidebar"] {
   background-color: rgba(7, 12, 24, .98) !important;
 }
-/* Only short wrappers around the input get transparent treatment. */
+/* Remove opaque outer dock layers without changing the conversation or sidebar. */
 html.ds-active .ds-dock,
 html.ds-active #thread-bottom,
 html.ds-active #thread-bottom-container {
@@ -59,6 +59,24 @@ html.ds-active [data-testid="composer-root"] {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+
+/* Glass is optional: keep the editor legible, but show some wallpaper through it. */
+html.ds-active.ds-glass-composer .ds-composer,
+html.ds-active.ds-glass-composer [data-testid="composer-root"] {
+  background: rgba(12, 18, 30, .58) !important;
+  background-image: none !important;
+  backdrop-filter: blur(10px) saturate(1.12) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.12) !important;
+  box-shadow: 0 5px 22px rgba(0, 0, 0, .23) !important;
+}
+/* Only reset broad surface-color wrappers INSIDE the composer (not message bubbles). */
+html.ds-active.ds-glass-composer .ds-composer .bg-token-main-surface-primary,
+html.ds-active.ds-glass-composer .ds-composer .bg-token-main-surface-secondary,
+html.ds-active.ds-glass-composer .ds-composer .bg-token-bg-elevated-secondary {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
 html.ds-active .ds-composer [contenteditable="true"],
 html.ds-active .ds-composer textarea {
   color: #f1f3fa !important;
@@ -99,8 +117,33 @@ html.ds-active .ds-composer textarea {
   color: #f0f4ff;background: #0c1526;border-radius: 8px;
 }
 #dreamscape-app .ds-panel input[type="range"] {width: 100%;accent-color: #dfc895;}
-#dreamscape-app .ds-panel input[type="checkbox"] {margin-right: 8px;accent-color: #dfc895;}
-#dreamscape-app .ds-choice {margin: 11px 0;}
+/* Native checkboxes exist already, but ChatGPT may hide their default appearance. */
+#dreamscape-app .ds-panel .ds-choice {
+  display:flex !important;align-items:center;gap:11px;min-height:39px;
+  margin:6px 0;padding:8px 10px;border-radius:9px;
+  border:1px solid rgba(227,211,183,.16);background:rgba(255,255,255,.045);
+  color:#eef2fa;cursor:pointer;line-height:1.35;
+}
+#dreamscape-app .ds-panel .ds-choice:hover {background:rgba(255,255,255,.09);}
+#dreamscape-app .ds-panel .ds-choice input[type="checkbox"] {
+  appearance:none !important;-webkit-appearance:none !important;
+  display:grid !important;place-content:center !important;
+  flex:0 0 20px !important;position:static !important;
+  width:20px !important;height:20px !important;margin:0 !important;
+  visibility:visible !important;opacity:1 !important;
+  border:1.5px solid #d8c49e !important;border-radius:5px !important;
+  background:#0b162a !important;cursor:pointer !important;
+}
+#dreamscape-app .ds-panel .ds-choice input[type="checkbox"]:checked {
+  border-color:#e7d5ad !important;background:#dfc998 !important;
+}
+#dreamscape-app .ds-panel .ds-choice input[type="checkbox"]:checked::before {
+  content:'✓';font-size:15px;font-weight:800;line-height:1;color:#112039;
+}
+#dreamscape-app .ds-panel .ds-choice input[type="checkbox"]:focus-visible {
+  outline:2px solid white !important;outline-offset:3px !important;
+}
+
 #dreamscape-app .ds-actions {display: flex;gap: 10px;margin: 12px 0;align-items: center;}
 #dreamscape-app .ds-actions button,
 #dreamscape-app .ds-upload-label {
@@ -111,7 +154,7 @@ html.ds-active .ds-composer textarea {
 #dreamscape-app .ds-panel small {display: block;line-height: 1.5;opacity: .65;margin-top: 14px;}
 #dreamscape-app .ds-status {font-size: 12px;line-height: 1.5;color: #f2d8a3;margin: 10px 0;}
 #ds-victor {
-  position: fixed;width: 64px;height: 51px;image-rendering: pixelated;
+  position: fixed;width: 74px;height: 59px;image-rendering: pixelated;
   pointer-events: none;z-index: 2147482999;
   filter: drop-shadow(0 2px 2px #0008);
 }
