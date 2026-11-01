@@ -11,8 +11,8 @@
   let lastFrameKey='';
   const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
   const petSequences=ASSETS.victor;
-  const VICTOR_BOX_WIDTH=64;
-  const VICTOR_BOX_HEIGHT=51;
+  const VICTOR_BOX_WIDTH=74;
+  const VICTOR_BOX_HEIGHT=59;
 
   function positionVictor(){
     if(!victorElement)return;
@@ -39,7 +39,7 @@
     if(!image?.complete||!image.naturalWidth)return;
     const canvas=victorCanvas;
     victorContext.clearRect(0,0,canvas.width,canvas.height);
-    const scale=Math.min(4.4,79.2/image.naturalHeight,(canvas.width-8)/image.naturalWidth,(canvas.height-8)/image.naturalHeight);
+    const scale=Math.min(5.06,91.08/image.naturalHeight,(canvas.width-8)/image.naturalWidth,(canvas.height-8)/image.naturalHeight);
     const width=Math.round(image.naturalWidth*scale);
     const height=Math.round(image.naturalHeight*scale);
     const x=Math.round((canvas.width-width)/2);
@@ -99,7 +99,8 @@
     victorElement.append(victorCanvas);
     victorContext=victorCanvas.getContext('2d');
     victorContext.imageSmoothingEnabled=false;
-    // Draw into a single high-DPI canvas; mirror the sprite for leftward movement.
+    // Draw into a single high-DPI canvas; the fixed canvas is 15% bigger than v0.3.1.
+    // Mirror the sprite for leftward movement; preserve one canvas to avoid ghosting.
     for(const [sequence,frames] of Object.entries(petSequences)){
       victorImages[sequence]=frames.map(src=>{
         const image=new Image();image.src=src;
