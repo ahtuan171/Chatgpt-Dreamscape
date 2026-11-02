@@ -7,16 +7,59 @@
   const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
   function wallpaperDim(id){const wall=findWallpaper(id);return clamp(Number(settings.dimOverrides[id]??wall?.dim??22)||0,0,75);}
   function wallpaperPosition(id){return clamp(Number(settings.positionOverrides[id]??50)||0,0,100);}
-  function setWallpaperProperties(){
+  // Reveal only user-selected wallpapers; initial load and resizing remain instant.
+  let displayedWallpaperId=null;
+  let wallpaperReveal=null;
+  const cornerPoints=['0% 0%','100% 0%','0% 100%','100% 100%'];
+  function applyWallpaperBackground(id,src,dim,position){
+    if(src)document.documentElement.style.setProperty('--ds-wall',`url("${src}")`);
+    document.documentElement.style.setProperty('--ds-dim',String(dim/100));
+    document.documentElement.style.setProperty('--ds-position',position+'%');
+    displayedWallpaperId=id;
+  }
+  function revealWallpaper(wallpaper,src,dim,position){
+    // A new selection interrupts the previous reveal cleanly.
+    wallpaperReveal?.finish();
+    wallpaperReveal=null;
+    if(!document.body || !window.Animation || !document.documentElement.animate ||
+       matchMedia('(prefers-reduced-motion: reduce)').matches){
+      applyWallpaperBackground(wallpaper.id,src,dim,position);
+      return;
+    }
+    const overlay=document.createElement('div');
+    overlay.className='ds-wallpaper-reveal';
+    overlay.setAttribute('aria-hidden','true');
+    overlay.style.backgroundImage=`linear-gradient(rgba(2,6,14,${dim/100}),rgba(2,6,14,${dim/100})),url("${src}")`;
+    overlay.style.backgroundPosition=position+'% center';
+    document.body.append(overlay);
+    const corner=cornerPoints[Math.floor(Math.random()*cornerPoints.length)];
+    const animation=overlay.animate([
+      {clipPath:`circle(0px at ${corner})`},
+      {clipPath:`circle(150vmax at ${corner})`}
+    ],{duration:720,easing:'cubic-bezier(.22,1,.36,1)',fill:'forwards'});
+    let finished=false;
+    const finish=()=>{
+      if(finished)return;
+      finished=true;
+      applyWallpaperBackground(wallpaper.id,src,dim,position);
+      animation.cancel();overlay.remove();
+      if(wallpaperReveal?.finish===finish)wallpaperReveal=null;
+    };
+    wallpaperReveal={finish};
+    animation.finished.then(finish,()=>{});
+  }
+  function setWallpaperProperties(animateChange=false){
     const wallpaper=activeWallpaper();
     if(!findWallpaper(settings.theme)&&!String(settings.theme).startsWith('custom-'))settings.theme=wallpaper.id;
     const src=wallpaper.uri||customObjectUrls.get(wallpaper.id);
-    if(src)document.documentElement.style.setProperty('--ds-wall',`url("${src}")`);
-    document.documentElement.style.setProperty('--ds-dim',String(wallpaperDim(wallpaper.id)/100));
+    const dim=wallpaperDim(wallpaper.id);
+    const position=wallpaperPosition(wallpaper.id);
+    if(animateChange && settings.enabled && displayedWallpaperId && displayedWallpaperId!==wallpaper.id)
+      revealWallpaper(wallpaper,src,dim,position);
+    else {wallpaperReveal?.finish();wallpaperReveal=null;applyWallpaperBackground(wallpaper.id,src,dim,position);}
     // Built-in themes share a dark overlay, keeping conversation text readable.
     document.documentElement.classList.remove('ds-parchment');
     document.documentElement.style.setProperty('--ds-overlay-rgb','2,6,14');
-    document.documentElement.style.setProperty('--ds-position',wallpaperPosition(wallpaper.id)+'%');
     document.documentElement.classList.toggle('ds-active',!!settings.enabled);
     if(victorElement)positionVictor();
     saveSettings();
@@ -43,7 +86,7 @@
     const url=URL.createObjectURL(optimized);
     customObjectUrls.set(id,url);
     customWallpapers.set(id,{id,name,dim:20,custom:true});
-    settings.theme=id;saveSettings();refreshThemePicker();setWallpaperProperties();syncControls();
+    settings.theme=id;saveSettings();refreshThemePicker();setWallpaperProperties(true);syncControls();
     showStatus(`Added “${name}” to My Wallpapers.`);
   }
   async function removeWallpaper(id){

@@ -122,21 +122,44 @@ def run_tests(page, real_storage):
     assert page.locator('.ds-glass-check').count() == 0
     assert not page.locator('html').evaluate("e=>e.classList.contains('ds-glass-composer')")
     assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgb(13, 18, 28)'
+    # Theme changes originate at one of four corners; the reveal covers the screen,
+    # does not intercept input, and disappears after a smooth 720ms animation.
+    old_wall=page.evaluate("document.documentElement.style.getPropertyValue('--ds-wall')")
+    page.locator('.ds-theme').select_option('silent-king')
+    page.wait_for_function("!!document.querySelector('.ds-wallpaper-reveal')")
+    assert page.locator('.ds-wallpaper-reveal').evaluate("e=>getComputedStyle(e).pointerEvents==='none'")
+    assert page.evaluate("document.documentElement.style.getPropertyValue('--ds-wall')") == old_wall
+    anim=page.locator('.ds-wallpaper-reveal').evaluate("e=>e.getAnimations()[0].effect.getKeyframes().map(k=>k.clipPath)")
+    assert anim[0].startswith('circle(0px at ') and anim[1].startswith('circle(150vmax at '),anim
+    # Repeated selections must cancel the old effect and leave only one layer.
+    page.locator('.ds-theme').select_option('arcane-library')
+    assert page.locator('.ds-wallpaper-reveal').count()==1
+    page.wait_for_timeout(800)
+    assert page.locator('.ds-wallpaper-reveal').count()==0
+    assert page.evaluate("document.documentElement.style.getPropertyValue('--ds-wall')") != old_wall
+    assert page.locator('article h1').is_visible()
+    page.emulate_media(reduced_motion='reduce')
+    page.locator('.ds-theme').select_option('moonlit-castle')
+    assert page.locator('.ds-wallpaper-reveal').count()==0
+    page.emulate_media(reduced_motion='no-preference')
     assert page.locator('.ds-wall-preview').is_visible()
     assert page.locator('.ds-hint').inner_text().startswith('Changes wallpaper cropping')
     for theme in ['moonlit-castle', 'midnight-tulips', 'moonlit-romance', 'arcane-library', 'silent-king']:
         page.locator('.ds-theme').select_option(theme)
+        page.wait_for_timeout(770)
         prop = page.evaluate("document.documentElement.style.getPropertyValue('--ds-wall')")
         assert prop.startswith('url("data:image/webp;base64,'), theme
         if theme in ('arcane-library', 'silent-king'):
             assert page.locator('.ds-wall-preview').evaluate('e=>getComputedStyle(e).backgroundImage.includes("data:image/webp;base64,")'), theme
             page.screenshot(path=str(folder / (theme + '.png')))
     page.locator('.ds-theme').select_option('moonlit-romance')
+    page.wait_for_timeout(770)
     assert not page.locator('html').evaluate("e=>e.classList.contains('ds-parchment')")
     assert page.locator('.ds-overlay-label').inner_text() == 'Darken wallpaper'
     assert page.locator('article h1').evaluate('e=>getComputedStyle(e).color') != 'rgb(45, 33, 25)'
     page.screenshot(path=str(folder / 'moonlit-romance.png'))
     page.locator('.ds-theme').select_option('midnight-tulips')
+    page.wait_for_timeout(770)
     page.locator('.ds-dim').fill('19')
     page.locator('.ds-dim').dispatch_event('input')
     assert page.locator('.ds-dim-value').inner_text() == '19%'

@@ -81,7 +81,7 @@
     launch.addEventListener('click',()=>toggle(panel.hidden));
     get('.ds-close').addEventListener('click',()=>toggle(false));
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)toggle(false);});
-    get('.ds-theme').addEventListener('change',e=>{settings.theme=e.target.value;setWallpaperProperties();syncControls();});
+    get('.ds-theme').addEventListener('change',e=>{settings.theme=e.target.value;setWallpaperProperties(true);syncControls();});
     get('.ds-dim').addEventListener('input',e=>{settings.dimOverrides[settings.theme]=Number(e.target.value);setWallpaperProperties();syncControls();});
     get('.ds-position').addEventListener('input',e=>{settings.positionOverrides[settings.theme]=Number(e.target.value);setWallpaperProperties();syncControls();});
     for(const [selector,key] of [['.ds-victor-check','victor'],['.ds-motion-check','motion'],['.ds-active-check','enabled']]){

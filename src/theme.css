@@ -170,3 +170,14 @@ html.ds-active .ds-composer textarea {
 
 #dreamscape-app .ds-wall-preview {height:116px;width:100%;margin:11px 0 15px;border-radius:10px;border:1px solid #ffffff23;background-color:#0a1120;background-position:center;background-size:cover;}
 #dreamscape-app .ds-hint {display:block;color:#bcc7d7;font-size:11px;line-height:1.35;margin:5px 0 12px;}
+
+/* Temporary theme-reveal sheet, never intercepts user input. */
+.ds-wallpaper-reveal {
+  position:fixed;inset:0;z-index:2147482500;
+  background-size:cover;background-repeat:no-repeat;
+  pointer-events:none;user-select:none;
+  will-change:clip-path;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-wallpaper-reveal {display:none !important;}
+}
