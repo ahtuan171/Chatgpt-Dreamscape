@@ -18,7 +18,6 @@
     document.documentElement.style.setProperty('--ds-overlay-rgb','2,6,14');
     document.documentElement.style.setProperty('--ds-position',wallpaperPosition(wallpaper.id)+'%');
     document.documentElement.classList.toggle('ds-active',!!settings.enabled);
-    document.documentElement.classList.toggle('ds-glass-composer',!!settings.enabled&&!!settings.glassComposer);
     if(victorElement)positionVictor();
     saveSettings();
   }

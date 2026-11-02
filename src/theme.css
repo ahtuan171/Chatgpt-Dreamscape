@@ -60,23 +60,6 @@ html.ds-active [data-testid="composer-root"] {
   -webkit-backdrop-filter: none !important;
 }
 
-/* Glass is optional: keep the editor legible, but show some wallpaper through it. */
-html.ds-active.ds-glass-composer .ds-composer,
-html.ds-active.ds-glass-composer [data-testid="composer-root"] {
-  background: rgba(12, 18, 30, .58) !important;
-  background-image: none !important;
-  backdrop-filter: blur(10px) saturate(1.12) !important;
-  -webkit-backdrop-filter: blur(10px) saturate(1.12) !important;
-  box-shadow: 0 5px 22px rgba(0, 0, 0, .23) !important;
-}
-/* Only reset broad surface-color wrappers INSIDE the composer (not message bubbles). */
-html.ds-active.ds-glass-composer .ds-composer .bg-token-main-surface-primary,
-html.ds-active.ds-glass-composer .ds-composer .bg-token-main-surface-secondary,
-html.ds-active.ds-glass-composer .ds-composer .bg-token-bg-elevated-secondary {
-  background-color: transparent !important;
-  background-image: none !important;
-}
-
 html.ds-active .ds-composer [contenteditable="true"],
 html.ds-active .ds-composer textarea {
   color: #f1f3fa !important;

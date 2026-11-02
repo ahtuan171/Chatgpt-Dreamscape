@@ -86,8 +86,8 @@ def run_tests(page, real_storage):
     page.wait_for_function("document.getElementById('ds-victor')?.dataset.motion==='walk' && document.getElementById('ds-victor')?.dataset.facing==='right'",timeout=5000)
     for sel in ['#thread-bottom', '#thread-bottom-container', '.outer-dock']:
         assert page.locator(sel).evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgba(0, 0, 0, 0)', sel
-    assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgba(12, 18, 30, 0.58)'
-    assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backdropFilter').startswith('blur(10px)')
+    assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgb(13, 18, 28)'
+    assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backdropFilter') == 'none'
     assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).color') == 'rgb(241, 243, 250)'
     assert not page.locator('.ds-status').is_visible()
     # Expanded composer / attachment-like UI must not revive a full-width black dock.
@@ -110,7 +110,7 @@ def run_tests(page, real_storage):
     page.locator('.ds-launch').click()
     assert page.locator('.ds-panel').is_visible()
     # Visible, keyboard-accessible checkmarks (not just text labels).
-    controls = ['.ds-victor-check', '.ds-motion-check', '.ds-glass-check', '.ds-active-check']
+    controls = ['.ds-victor-check', '.ds-motion-check', '.ds-active-check']
     for selector in controls:
         input_box = page.locator(selector)
         assert input_box.is_visible(), selector
@@ -118,15 +118,10 @@ def run_tests(page, real_storage):
         rect = input_box.bounding_box()
         assert rect['width'] == 20 and rect['height'] == 20, (selector, rect)
         assert input_box.evaluate('e=>getComputedStyle(e, "::before").content') == '"✓"', selector
-    assert len(controls)==4
-    page.locator('.ds-glass-check').uncheck()
-    assert page.evaluate("JSON.parse(localStorage.getItem('dreamscape-public-v1')).glassComposer") is False
+    assert len(controls)==3
+    assert page.locator('.ds-glass-check').count() == 0
     assert not page.locator('html').evaluate("e=>e.classList.contains('ds-glass-composer')")
     assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgb(13, 18, 28)'
-    page.locator('.ds-glass-check').check()
-    assert page.evaluate("JSON.parse(localStorage.getItem('dreamscape-public-v1')).glassComposer") is True
-    assert page.locator('html').evaluate("e=>e.classList.contains('ds-glass-composer')")
-    assert page.locator('[data-testid="composer-root"]').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgba(12, 18, 30, 0.58)'
     assert page.locator('.ds-wall-preview').is_visible()
     assert page.locator('.ds-hint').inner_text().startswith('Changes wallpaper cropping')
     for theme in ['moonlit-castle', 'midnight-tulips', 'moonlit-romance', 'arcane-library', 'silent-king']:
@@ -193,7 +188,7 @@ def run_tests(page, real_storage):
     page.wait_for_timeout(250)
     assert page.locator('article h1').is_visible()
     assert not errors, errors
-    print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 5 themes, Victor over effort control with facing changes, visible persisted checkboxes, translucent composer and dock, dim, position, upload, save, delete, fallback and resize")
+    print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 5 themes, Victor over effort control with facing changes, visible persisted checkboxes, solid composer and dock styling, dim, position, upload, save, delete, fallback and resize")
 
 
 def test_new_chat_composer(browser, use_mock_storage):
@@ -203,6 +198,8 @@ def test_new_chat_composer(browser, use_mock_storage):
     page.on('pageerror',lambda e:errors.append(str(e)))
     page.set_content(FIXTURE)
     page.evaluate(STORAGE_SHIM)
+    # Existing users may still have the retired option in localStorage.
+    page.evaluate("localStorage.setItem('dreamscape-public-v1', JSON.stringify({glassComposer:true, victor:true}))")
     page.evaluate('''() => {
        // The old conversation composer can remain mounted while a new-chat
        // landing page presents a different, taller composer component.
@@ -220,6 +217,8 @@ def test_new_chat_composer(browser, use_mock_storage):
     page.add_script_tag(content=SCRIPT)
     page.wait_for_timeout(550)
     assert page.locator('#ds-victor').is_visible(), 'Victor missing on fresh new-chat landing page'
+    assert not page.evaluate("'glassComposer' in JSON.parse(localStorage.getItem('dreamscape-public-v1'))")
+    assert page.locator('.ds-glass-check').count()==0
     assert page.locator('#ds-victor').get_attribute('data-anchor')=='effort'
     cat=page.locator('#ds-victor').bounding_box()
     target=page.locator('.new-effort span').bounding_box()
@@ -440,7 +439,7 @@ def test_attachment_dock_reparent(browser, url, use_mock_storage):
     assert page.locator('article').evaluate('e=>!e.classList.contains("ds-dock")')
     assert page.locator('article h1').is_visible()
     assert page.locator('#ds-victor').is_visible()
-    assert page.locator('form').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgba(12, 18, 30, 0.58)'
+    assert page.locator('form').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgb(13, 18, 28)'
     output=ROOT/'tests/screenshots/attachment-dock-regression.png'
     page.screenshot(path=str(output))
     after=Image.open(output).convert('RGB').getpixel((310,710))

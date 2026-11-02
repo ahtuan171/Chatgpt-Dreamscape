@@ -37,7 +37,6 @@
     interfaceRoot.querySelector('.ds-victor-check').checked=!!settings.victor;
     interfaceRoot.querySelector('.ds-motion-check').checked=!!settings.motion;
     interfaceRoot.querySelector('.ds-active-check').checked=!!settings.enabled;
-    interfaceRoot.querySelector('.ds-glass-check').checked=!!settings.glassComposer;
     interfaceRoot.querySelector('.ds-delete').hidden=!wallpaper.custom;
     const preview=interfaceRoot.querySelector('.ds-wall-preview');
     if(preview){
@@ -68,7 +67,6 @@
         <div class="ds-separator"></div>
         <label class="ds-choice"><input class="ds-victor-check" type="checkbox"> Victor · pixel companion</label>
         <label class="ds-choice"><input class="ds-motion-check" type="checkbox"> Gentle animations</label>
-        <label class="ds-choice"><input class="ds-glass-check" type="checkbox"> Translucent composer (show wallpaper)</label>
         <label class="ds-choice"><input class="ds-active-check" type="checkbox"> Enable Dreamscape</label>
         <div class="ds-status" role="status" hidden></div>
         <small>Your wallpapers and settings stay in this browser. Nothing is uploaded.</small>
@@ -86,7 +84,7 @@
     get('.ds-theme').addEventListener('change',e=>{settings.theme=e.target.value;setWallpaperProperties();syncControls();});
     get('.ds-dim').addEventListener('input',e=>{settings.dimOverrides[settings.theme]=Number(e.target.value);setWallpaperProperties();syncControls();});
     get('.ds-position').addEventListener('input',e=>{settings.positionOverrides[settings.theme]=Number(e.target.value);setWallpaperProperties();syncControls();});
-    for(const [selector,key] of [['.ds-victor-check','victor'],['.ds-motion-check','motion'],['.ds-glass-check','glassComposer'],['.ds-active-check','enabled']]){
+    for(const [selector,key] of [['.ds-victor-check','victor'],['.ds-motion-check','motion'],['.ds-active-check','enabled']]){
       get(selector).addEventListener('change',e=>{settings[key]=e.target.checked;setWallpaperProperties();saveSettings();drawVictor();});
     }
     get('.ds-upload').addEventListener('change',async e=>{
