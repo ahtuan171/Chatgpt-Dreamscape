@@ -11,7 +11,7 @@
 
 **ChatGPT Dreamscape** là một userscript mã nguồn mở giúp bạn tùy chỉnh giao diện ChatGPT trên **trình duyệt máy tính** bằng những hình nền giàu cảm xúc và một người bạn pixel nhỏ tên **Victor**.
 
-> **Bản xem trước v0.3.6.** Đây là dự án cộng đồng độc lập, không phải tính năng chính thức của OpenAI. Giao diện ChatGPT có thể thay đổi và ảnh hưởng đến userscript; nếu phát hiện lỗi, hãy [tạo issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues).
+> **Bản xem trước v0.3.9.** Đây là dự án cộng đồng độc lập, không phải tính năng chính thức của OpenAI. Giao diện ChatGPT có thể thay đổi và ảnh hưởng đến userscript; nếu phát hiện lỗi, hãy [tạo issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues).
 
 ### 🖼️ Thư viện hình nền
 
@@ -31,11 +31,11 @@ Bạn cũng có thể nhập hình nền cá nhân từ menu **☾**.
 
 ### ✨ Tính năng
 
-- **Đổi hình nền:** lựa chọn một trong năm hình nền có sẵn hoặc tải ảnh cá nhân (PNG, JPG, WebP).
+- **Đổi hình nền:** lựa chọn một trong năm hình nền có sẵn hoặc tải ảnh cá nhân (PNG, JPG, WebP). Khi đổi ảnh, hình nền mới lan rộng mềm mại từ một góc ngẫu nhiên; tắt chuyển động trong hệ điều hành sẽ bỏ qua hiệu ứng.
 - **Tùy chỉnh từng ảnh:** xem trước, điều chỉnh độ tối và vị trí hiển thị theo chiều ngang (0% trái · 50% giữa · 100% phải khi ảnh bị cắt).
 - **Lưu trữ trên thiết bị:** ảnh cá nhân được xử lý và lưu trong trình duyệt bằng IndexedDB; không tải lên máy chủ hình nền.
 - **Victor — bạn mèo pixel:** đứng phía trên tùy chọn mức suy luận “High” trong ô nhập (hoặc vị trí gần đó nếu giao diện khác), lớn hơn 15% so với v0.3.1, đi lại một đoạn ngắn, quay đầu, chớp mắt và ngủ. Nhấp vào Victor để chú mèo nhảy lên và hiện trái tim; có thể bật/tắt và tôn trọng tùy chọn giảm chuyển động.
-- **Giao diện dễ đọc:** ô nhập có chế độ kính mờ trong suốt (có thể tắt để dùng nền tối đặc); phần nền bao quanh ô nhập trong suốt để nhìn thấy hình nền. Các ô đánh dấu rõ ràng để bật/tắt Victor, chuyển động, ô nhập kính mờ và Dreamscape.
+- **Giao diện dễ đọc:** ô nhập giữ nền tối đặc để đọc chữ rõ ràng. Có thể bật/tắt Victor, chuyển động và Dreamscape bằng ô đánh dấu.
 - **Tôn trọng quyền riêng tư:** không có công cụ phân tích hành vi, không thu thập nội dung hội thoại.
 
 ### 🚀 Cài đặt (không cần terminal)
@@ -58,7 +58,6 @@ Nếu hình nền, Victor hoặc nút **☾** không xuất hiện, Tampermonkey
 
 **Kiểm tra nhanh (không bắt buộc):** Nhấn `F12` → **Console** rồi chạy `!!document.querySelector("#dreamscape-app")`. Kết quả `true` nghĩa là giao diện Dreamscape đã được chèn vào trang; nếu hình nền vẫn không hiện, hãy kiểm tra nút bật giao diện trong phần cài đặt **☾**.
 
-**Mẹo:** Trong menu **☾**, bỏ chọn **Translucent composer (show wallpaper)** nếu bạn muốn ô nhập quay lại nền tối đặc.
 
 ### 🐈 Gặp Victor
 
@@ -105,7 +104,7 @@ Mã nguồn ở [`src/`](src/), ảnh ở [`assets/`](assets/), bộ công cụ 
 
 **ChatGPT Dreamscape** is an independent, open-source userscript that brings atmospheric wallpapers and **Victor**, a tiny gray pixel cat, to the **desktop ChatGPT web interface**.
 
-> **Early public preview · v0.3.6.** This is a community customization, not an official OpenAI feature. Changes to ChatGPT's interface may affect compatibility. Please [open an issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues) when something breaks.
+> **Early public preview · v0.3.9.** This is a community customization, not an official OpenAI feature. Changes to ChatGPT's interface may affect compatibility. Please [open an issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues) when something breaks.
 
 ### 🖼️ Built-in wallpapers
 
@@ -125,11 +124,11 @@ You can also import your own wallpapers from the **☾** menu.
 
 ### ✨ Features
 
-- **Custom wallpapers:** choose a built-in image or import a PNG, JPEG or WebP file.
+- **Custom wallpapers:** choose a built-in image or import a PNG, JPEG or WebP file. New selections reveal smoothly from a random corner; reduced-motion preferences disable the effect.
 - **Per-wallpaper controls:** preview images, adjust darkness, and change horizontal cropping (0% left · 50% center · 100% right when cropped).
 - **Local storage:** your personal images are processed and saved in your browser with IndexedDB, not uploaded to a wallpaper server.
 - **Victor:** an optional gray pixel cat perched above the composer's “High” effort control (or nearby if unavailable), 15% larger than v0.3.1. He walks a short distance, turns to face the return direction, blinks and sleeps. Click Victor for a little hop and heart; reduced-motion preferences are respected.
-- **Readable interface:** a translucent glass composer (with a solid-background option) shows the wallpaper through the input while keeping text legible. The outer dock is transparent. Visible checkboxes control Victor, gentle animations, translucent composer, and Dreamscape itself.
+- **Readable interface:** the composer keeps a solid dark background for legible text. Visible checkboxes control Victor, gentle animations, and Dreamscape.
 - **Privacy-first:** no analytics and no collection of conversation text.
 
 ### 🚀 Install (desktop only; no terminal)
@@ -152,7 +151,6 @@ If the wallpaper, Victor or the **☾** button is missing, your browser may be b
 
 **Optional check:** Press `F12` → **Console** and run `!!document.querySelector("#dreamscape-app")`. `true` means the Dreamscape interface was inserted; if the wallpaper is still missing, check whether the theme is enabled in **☾** settings.
 
-**Tip:** Uncheck **Translucent composer (show wallpaper)** in the **☾** menu to restore the solid charcoal composer.
 
 ### 🐈 Meet Victor
 
