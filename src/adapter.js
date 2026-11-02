@@ -6,20 +6,58 @@
   let activeDockNodes=[];
   let resizeListener=null;
   function getComposer(){
+    // ChatGPT may render a centered composer on New Chat and a fixed dock in a
+    // conversation. Some builds also leave an invisible, older composer mounted.
+    // Search ALL candidates, rather than letting a hidden first match block us.
+    const visibleRect=el=>{
+      if(!el||!el.isConnected)return null;
+      const r=el.getBoundingClientRect();
+      if(r.width<220||r.height<29||r.height>620 ||r.bottom<=0||
+         r.top>=innerHeight||r.right<=0||r.left>=innerWidth)return null;
+      const s=getComputedStyle(el);
+      if(s.display==='none'||s.visibility==='hidden')return null;
+      return r;
+    };
+    const visibleEditable=el=>{
+      if(!el)return false;
+      const r=el.getBoundingClientRect();
+      const style=getComputedStyle(el);
+      return style.display!=='none'&&style.visibility!=='hidden'&&
+        r.width>=18&&r.height>=10&&r.bottom>0&&r.top<innerHeight;
+    };
+    const editorSelector='#prompt-textarea,[data-testid="composer-text-input"],[contenteditable="true"][role="textbox"],textarea';
+    const candidates=[];
     for(const selector of [
       '[data-testid="composer-root"]',
       'form:has(#prompt-textarea)',
       'form:has([data-testid="composer-text-input"])',
       'form:has([contenteditable="true"])'
     ]){
-      try {
-        const el=document.querySelector(selector);
-        if(!el)continue;
-        const r=el.getBoundingClientRect();
-        if(r.width>220 && r.height>28 && r.height<360 && r.top>=0 && r.top<innerHeight) return el;
-      }catch{}
+      for(const el of document.querySelectorAll(selector)){
+        const rect=visibleRect(el);
+        if(!rect||!Array.from(el.querySelectorAll(editorSelector)).some(visibleEditable))continue;
+        if(!candidates.some(c=>c.element===el))candidates.push({element:el,rect});
+      }
     }
-    return null;
+    // The New Chat landing can use a div-based composer with no form/testid.
+    // Find a compact wrapper around a visible textbox AND its controls.
+    if(!candidates.length){
+      for(const editor of document.querySelectorAll(editorSelector)){
+        if(!visibleEditable(editor))continue;
+        let node=editor.parentElement;
+        for(let depth=0;node&&depth<7;node=node.parentElement,depth++){
+          if(node.matches('#root,main,[role="main"],body'))break;
+          const rect=visibleRect(node);
+          if(rect&&node.querySelector('button,[role="button"]')){
+            candidates.push({element:node,rect});break;
+          }
+        }
+      }
+    }
+    // Prefer a dock near the bottom if more than one composer is genuinely
+    // visible; otherwise use the centered new-chat composer.
+    candidates.sort((a,b)=>b.rect.bottom-a.rect.bottom);
+    return candidates[0]?.element||null;
   }
   function clearDockClasses(){
     for(const e of activeDockNodes)e.classList.remove('ds-dock');
@@ -91,8 +129,17 @@
   function scheduleSync(){if(queued)return;queued=true;requestAnimationFrame(syncComposer);}
   function startAdapter(){
     resizeObserver=new ResizeObserver(scheduleSync);
-    observer=new MutationObserver(scheduleSync);
-    observer.observe(document.body,{childList:true,subtree:true});
+    observer=new MutationObserver(mutations=>{
+      // SPA transitions can reveal a composer by changing CSS alone. Ignore
+      // Dreamscape's own position/style mutations to prevent an update loop.
+      if(mutations.some(m=>{
+        const target=m.target;
+        if(target instanceof Element && (target.id==='ds-victor'||target.closest('#dreamscape-app')))return false;
+        return true;
+      }))scheduleSync();
+    });
+    observer.observe(document.body,{childList:true,subtree:true,
+      attributes:true,attributeFilter:['class','style','hidden','aria-hidden']});
     window.addEventListener('resize',scheduleSync,{passive:true});
     window.addEventListener('scroll',scheduleSync,{capture:true,passive:true});
     scheduleSync();

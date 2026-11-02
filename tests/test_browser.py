@@ -196,6 +196,68 @@ def run_tests(page, real_storage):
     print(f"PASS ({'native IndexedDB' if real_storage else 'simulated storage'}): 5 themes, Victor over effort control with facing changes, visible persisted checkboxes, translucent composer and dock, dim, position, upload, save, delete, fallback and resize")
 
 
+def test_new_chat_composer(browser, use_mock_storage):
+    """New Chat / SPA swaps: visible composer can be tall, non-form, or loaded later."""
+    page = browser.new_page(viewport={'width':1600,'height':900})
+    errors=[]
+    page.on('pageerror',lambda e:errors.append(str(e)))
+    page.set_content(FIXTURE)
+    page.evaluate(STORAGE_SHIM)
+    page.evaluate('''() => {
+       // The old conversation composer can remain mounted while a new-chat
+       // landing page presents a different, taller composer component.
+       document.querySelector('#thread-bottom').style.display='none';
+       const landing=document.createElement('section');
+       landing.id='new-chat-landing';
+       landing.style.cssText='position:fixed;inset:130px 200px 100px 300px;display:grid;place-items:center;';
+       landing.innerHTML=`<div id="new-chat-composer" data-testid="composer-root" style="width:740px;height:390px;background:#252525;border-radius:22px;display:flex;align-items:flex-end;padding:24px;gap:18px">
+         <div id="prompt-textarea-new" role="textbox" contenteditable="true" style="flex:1;min-height:35px">Ask ChatGPT</div>
+         <button class="new-effort" type="button"><span>High</span></button>
+         <button type="button">➤</button>
+       </div>`;
+       document.querySelector('#root').append(landing);
+    }''')
+    page.add_script_tag(content=SCRIPT)
+    page.wait_for_timeout(550)
+    assert page.locator('#ds-victor').is_visible(), 'Victor missing on fresh new-chat landing page'
+    assert page.locator('#ds-victor').get_attribute('data-anchor')=='effort'
+    cat=page.locator('#ds-victor').bounding_box()
+    target=page.locator('.new-effort span').bounding_box()
+    assert abs(cat['x']+cat['width']/2-target['x']-target['width']/2)<5
+    page.locator('#ds-victor').click()
+    assert page.locator('#ds-victor').get_attribute('data-reaction')=='petted'
+    # Route to a conversation: old dock becomes visible, new-chat UI removed.
+    page.evaluate('''() => {
+      document.querySelector('#new-chat-landing').remove();
+      document.querySelector('#thread-bottom').style.display='flex';
+    }''')
+    page.wait_for_timeout(400)
+    assert page.locator('#ds-victor').is_visible()
+    assert page.locator('#ds-victor').get_attribute('data-anchor')=='effort'
+    # Go back to new chat; no form or testid, just an editable and toolbar.
+    page.evaluate('''() => {
+      document.querySelector('#thread-bottom').style.display='none';
+      const region=document.createElement('div');
+      region.id='new-chat-landing';
+      region.style.cssText='position:fixed;top:370px;left:450px;width:740px;height:160px;display:flex;align-items:center;background:#1d1d1d;border-radius:16px;';
+      region.innerHTML=`<div id="prompt-textarea" role="textbox" contenteditable="true" style="flex:1">Ask anything</div><button class="new-effort"><span>Medium</span></button>`;
+      document.querySelector('#root').append(region);
+    }''')
+    page.wait_for_timeout(400)
+    assert page.locator('#ds-victor').is_visible(), 'Victor missing on form-free new-chat layout'
+    assert page.locator('#ds-victor').get_attribute('data-anchor')=='effort'
+    # Temporary style-only hide/reveal (SPA or animation), without childList mutations.
+    page.locator('#new-chat-landing').evaluate("e=>e.style.display='none'")
+    page.wait_for_timeout(300)
+    assert page.locator('#ds-victor').is_hidden(), 'Victor must hide when no usable composer is visible'
+    page.locator('#new-chat-landing').evaluate("e=>e.style.display='flex'")
+    page.wait_for_timeout(450)
+    assert page.locator('#ds-victor').is_visible(), 'Victor not restored by CSS-only layout change'
+    assert not errors, errors
+    page.screenshot(path=str(ROOT/'tests/screenshots/new-chat-victor.png'))
+    page.close()
+    print('PASS: Victor works on new-chat landing (tall component, form-free composer, SPA swaps, CSS-only reveal)')
+
 def test_victor_interaction(browser, url, use_mock_storage):
     """Victor should perch over the effort control and respond to clicks and keyboard."""
     page = browser.new_page(viewport={'width':1600,'height':900}, reduced_motion='no-preference')
@@ -410,6 +472,7 @@ with Server(('127.0.0.1', 0), Handler) as server:
             page.set_content(FIXTURE)
             page.evaluate(STORAGE_SHIM)
             print('NOTE: browser navigation restricted; using about:blank fixture with simulated storage. Native IndexedDB must be tested in CI.')
+        test_new_chat_composer(browser, not real_storage)
         test_victor_interaction(browser, url, not real_storage)
         run_tests(page, real_storage)
         test_existing_selection_migration(browser, url, not real_storage)
