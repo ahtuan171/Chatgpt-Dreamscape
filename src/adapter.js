@@ -91,19 +91,27 @@
           if(r.height<=Math.max(540,c.height+230) && r.top>=c.top-Math.max(220,c.height+50))next.add(e);
         }
       }
-      // Some ChatGPT layouts paint the black gradient in a decorative sibling
-      // rather than on a composer ancestor. Only neutralize non-interactive,
-      // positioned backdrop layers that overlap the dock; never touch messages.
+      // Backdrops need not declare aria-hidden or pointer-events:none. Require
+      // an empty decorative subtree instead: never strip controls or messages.
+      const contentSelector='button,a,input,textarea,select,iframe,canvas,img,video,svg,[role="button"],[role="textbox"],[role="log"],[tabindex],[contenteditable]:not([contenteditable="false"]),article,[data-message-author-role]';
+      const decorative=node=>!node.matches(contentSelector)&&
+        !node.querySelector(contentSelector)&&!node.textContent.trim();
+      const markDecoration=(node,depth=0)=>{
+        next.add(node);
+        if(depth<6)for(const child of node.children){
+          if(!child.matches('script,style')&&decorative(child))markDecoration(child,depth+1);
+        }
+      };
       for(const wrapper of [...next]){
         for(const sibling of wrapper.children){
           if(sibling===el||sibling.contains(el)||sibling.matches('script,style'))continue;
           const style=getComputedStyle(sibling);
           if(!['absolute','fixed'].includes(style.position))continue;
-          if(style.pointerEvents!=='none'&&sibling.getAttribute('aria-hidden')!=='true')continue;
+          if(!decorative(sibling))continue;
           const r=sibling.getBoundingClientRect();
           if(r.width>=c.width*.9 && r.height>0 &&
              r.height<=Math.max(540,c.height+230) &&
-             r.top<c.bottom && r.bottom>c.top-140)next.add(sibling);
+             r.top<c.bottom && r.bottom>c.top-140)markDecoration(sibling);
         }
       }
     }

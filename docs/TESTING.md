@@ -7,6 +7,7 @@ The fast smoke test loads `tests/chatgpt-fixture.html` (a **simulated** ChatGPT 
 - Victor is visible near the right corner of the composer, an additional 15% larger (74 × 59 CSS px), moves left then turns to face right within an 80px patrol, and can be disabled
 - The outer composer **dock** remains transparent for collapsed and expanded composers; the rounded input retains a solid dark surface (no glass composer option)
 - Attachment-style composer reparenting with the **same form element**, 12 newly opaque nested dock wrappers, and a separate decorative black backdrop: all become transparent without touching conversation text (CSS and screenshot-pixel regression)
+- Unlabelled decorative dock backdrops with default pointer events, nested gradient/pseudo-element layers, preserved clickable controls, and restoring backgrounds when Dreamscape is disabled
 - The Victor, animation and Dreamscape controls are accessible, visible checkboxes; the retired glass setting is no longer available
 - Custom wallpaper import, IndexedDB storage, restore and deletion
 - Saved selections of removed built-in wallpapers safely fall back to Moonlit Castle, without deleting custom uploads

@@ -180,7 +180,7 @@ def run_tests(page, real_storage):
     assert not page.locator('html').evaluate("e=>e.classList.contains('ds-active')")
     page.locator('.ds-active-check').check()
     page.locator('.ds-upload').set_input_files(str(ROOT / 'assets/wallpapers/midnight-tulips.webp'))
-    page.wait_for_timeout(800)
+    page.wait_for_function("document.querySelector('.ds-theme')?.value.startsWith('custom-') && getComputedStyle(document.documentElement).getPropertyValue('--ds-wall').includes('blob:')")
     assert not errors, errors
     assert page.locator('.ds-theme option').count() == 6
     saved_id = page.locator('.ds-theme').input_value()
@@ -438,8 +438,18 @@ def test_attachment_dock_reparent(browser, url, use_mock_storage):
       dock.style.cssText='position:fixed;left:14px;right:14px;bottom:0;height:275px;background:#000;display:flex;align-items:center;justify-content:center;z-index:50;';
       const overlay=document.createElement('div');
       overlay.className='decorative-dock-background';
-      overlay.setAttribute('aria-hidden','true');
-      overlay.style.cssText='position:absolute;inset:0;background:#000;pointer-events:none;z-index:0;';
+      // No aria-hidden or pointer-events hint: ordinary decorative divs.
+      overlay.style.cssText='position:absolute;inset:0;background:#000;z-index:0;';
+      overlay.innerHTML='<div class="nested-backdrop" style="position:absolute;inset:0;background:linear-gradient(#000,#000)"></div>';
+      const style=document.createElement('style');
+      style.textContent='.nested-backdrop::before{content:"";position:absolute;inset:0;background:#000;backdrop-filter:blur(8px)}';
+      document.head.append(style);
+      const controls=document.createElement('div');
+      controls.className='dock-controls';
+      controls.style.cssText='position:absolute;left:0;bottom:0;background:rgb(20,30,40);z-index:2';
+      controls.innerHTML='<button type="button">Keep controls</button>';
+      controls.onclick=()=>controls.dataset.clicked='yes';
+      dock.append(controls);
       dock.appendChild(overlay);
       let node=dock;
       for(let i=0;i<12;i++){
@@ -455,9 +465,14 @@ def test_attachment_dock_reparent(browser, url, use_mock_storage):
     }''')
     page.wait_for_timeout(450)
     assert page.locator('form[data-testid="composer-root"]').count() == 1
-    for selector in ['.new-black-dock', '.nested-dark', '.decorative-dock-background']:
+    for selector in ['.new-black-dock', '.nested-dark', '.decorative-dock-background', '.nested-backdrop']:
         colors=page.locator(selector).evaluate_all('es=>es.map(e=>getComputedStyle(e).backgroundColor)')
         assert all(x=='rgba(0, 0, 0, 0)' for x in colors), (selector, colors)
+    assert page.locator('.nested-backdrop').evaluate('e=>getComputedStyle(e,"::before").backgroundColor') == 'rgba(0, 0, 0, 0)'
+    assert page.locator('.nested-backdrop').evaluate('e=>getComputedStyle(e,"::before").backdropFilter') == 'none'
+    assert page.locator('.dock-controls').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgb(20, 30, 40)'
+    page.locator('.dock-controls button').click()
+    assert page.locator('.dock-controls').get_attribute('data-clicked') == 'yes'
     assert page.locator('.nested-dark').count() == 12
     assert page.locator('article').evaluate('e=>!e.classList.contains("ds-dock")')
     assert page.locator('article h1').is_visible()
@@ -472,6 +487,11 @@ def test_attachment_dock_reparent(browser, url, use_mock_storage):
     page.locator('.new-black-dock').evaluate('e=>e.style.height="325px"')
     page.wait_for_timeout(350)
     assert page.locator('.decorative-dock-background').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgba(0, 0, 0, 0)'
+    page.locator('.ds-launch').click()
+    page.locator('.ds-active-check').uncheck()
+    assert page.locator('.decorative-dock-background').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgb(0, 0, 0)'
+    page.locator('.ds-active-check').check()
+    assert page.locator('.nested-backdrop').evaluate('e=>getComputedStyle(e).backgroundImage') == 'none'
     assert not errors, errors
     print('PASS: reparented and expanded composer; 12 opaque ancestors and black decorative sibling transparent (pixel + DOM checks)')
     page.close()
