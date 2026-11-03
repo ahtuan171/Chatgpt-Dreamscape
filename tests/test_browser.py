@@ -430,7 +430,9 @@ def test_attachment_dock_reparent(browser, url, use_mock_storage):
     page.wait_for_function("() => !!document.querySelector('#dreamscape-app')")
     page.wait_for_timeout(350)
     # Pixel outside the composer and inside the opaque strip introduced below.
-    original = Image.open(BytesIO(page.screenshot())).convert('RGB').getpixel((310, 710))
+    reference = Image.open(BytesIO(page.screenshot())).convert('RGB')
+    original = reference.getpixel((310, 710))
+    bottom_reference = [reference.getpixel((310, y)) for y in range(888, 900)]
     page.evaluate('''() => {
       const form=document.querySelector('form[data-testid="composer-root"]');
       const dock=document.createElement('div');
@@ -451,6 +453,10 @@ def test_attachment_dock_reparent(browser, url, use_mock_storage):
       controls.onclick=()=>controls.dataset.clicked='yes';
       dock.append(controls);
       dock.appendChild(overlay);
+      const bottomFade=document.createElement('div');
+      bottomFade.className='bottom-fade';
+      bottomFade.style.cssText='position:absolute;left:0;right:0;bottom:0;height:12px;background:linear-gradient(transparent,#000);border-top:1px solid #555;pointer-events:none';
+      dock.append(bottomFade);
       // Actual ChatGPT footer chain contains boxless React layout wrappers.
       // Backdrops with pointer-events:none are absent from elementsFromPoint.
       overlay.style.pointerEvents='none';
@@ -471,7 +477,7 @@ def test_attachment_dock_reparent(browser, url, use_mock_storage):
     }''')
     page.wait_for_timeout(450)
     assert page.locator('form[data-testid="composer-root"]').count() == 1
-    for selector in ['.new-black-dock', '.nested-dark', '.decorative-dock-background', '.nested-backdrop']:
+    for selector in ['.new-black-dock', '.nested-dark', '.decorative-dock-background', '.nested-backdrop', '.bottom-fade']:
         colors=page.locator(selector).evaluate_all('es=>es.map(e=>getComputedStyle(e).backgroundColor)')
         assert all(x=='rgba(0, 0, 0, 0)' for x in colors), (selector, colors)
     assert page.locator('.nested-backdrop').evaluate('e=>getComputedStyle(e,"::before").backgroundColor') == 'rgba(0, 0, 0, 0)'
@@ -479,6 +485,8 @@ def test_attachment_dock_reparent(browser, url, use_mock_storage):
     assert page.locator('.dock-controls').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgb(20, 30, 40)'
     page.locator('.dock-controls button').click()
     assert page.locator('.dock-controls').get_attribute('data-clicked') == 'yes'
+    assert page.locator('.bottom-fade').evaluate('e=>getComputedStyle(e).backgroundImage') == 'none'
+    assert page.locator('.bottom-fade').evaluate('e=>getComputedStyle(e).borderTopColor') == 'rgba(0, 0, 0, 0)'
     assert page.locator('.nested-dark').count() == 12
     assert page.locator('article').evaluate('e=>!e.classList.contains("ds-dock")')
     assert page.locator('article h1').is_visible()
@@ -486,7 +494,10 @@ def test_attachment_dock_reparent(browser, url, use_mock_storage):
     assert page.locator('form').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgb(13, 18, 28)'
     output=ROOT/'tests/screenshots/attachment-dock-regression.png'
     page.screenshot(path=str(output))
-    after=Image.open(output).convert('RGB').getpixel((310,710))
+    actual=Image.open(output).convert('RGB')
+    after=actual.getpixel((310,710))
+    for y, expected in zip(range(888,900), bottom_reference):
+        assert max(abs(a-b) for a,b in zip(actual.getpixel((310,y)), expected))<=3, ('bottom fade', y)
     assert max(abs(a-b) for a,b in zip(original,after))<=3, (original,after)
     # Same form expands again; no new composer element is created.
     page.locator('form').evaluate('e=>e.style.minHeight="275px"')
@@ -496,6 +507,8 @@ def test_attachment_dock_reparent(browser, url, use_mock_storage):
     page.locator('.ds-launch').click()
     page.locator('.ds-active-check').uncheck()
     assert page.locator('.decorative-dock-background').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgb(0, 0, 0)'
+    assert page.locator('.bottom-fade').evaluate('e=>getComputedStyle(e).backgroundImage') != 'none'
+    assert page.locator('.bottom-fade').evaluate('e=>getComputedStyle(e).borderTopColor') == 'rgb(85, 85, 85)'
     page.locator('.ds-active-check').check()
     assert page.locator('.nested-backdrop').evaluate('e=>getComputedStyle(e).backgroundImage') == 'none'
     assert not errors, errors

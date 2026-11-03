@@ -6,6 +6,7 @@ The fast smoke test loads `tests/chatgpt-fixture.html` (a **simulated** ChatGPT 
 - All five built-in wallpapers switch, display previews, and preserve dimming/position controls
 - Victor is visible near the right corner of the composer, an additional 15% larger (74 × 59 CSS px), moves left then turns to face right within an 80px patrol, and can be disabled
 - The outer composer **dock** remains transparent for collapsed and expanded composers; the rounded input retains a solid dark surface (no glass composer option)
+- Bottom-only gradient strips and border seams below the input: all 12 bottom screenshot rows match the wallpaper, and original styling returns when disabled
 - Boxless `display: contents` wrappers in the actual footer ancestor chain, with a pointer-events-none backdrop outside those wrappers
 - Attachment-style composer reparenting with the **same form element**, 12 newly opaque nested dock wrappers, and a separate decorative black backdrop: all become transparent without touching conversation text (CSS and screenshot-pixel regression)
 - Unlabelled decorative dock backdrops with default pointer events, nested gradient/pseudo-element layers, preserved clickable controls, and restoring backgrounds when Dreamscape is disabled

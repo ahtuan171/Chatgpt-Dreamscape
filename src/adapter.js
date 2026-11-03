@@ -117,13 +117,14 @@
         }
       };
       for(const wrapper of [...next]){
+        const dockRect=wrapper.getBoundingClientRect();
         for(const sibling of wrapper.children){
           if(sibling===el||sibling.contains(el)||sibling.matches('script,style'))continue;
           if(!decorative(sibling))continue;
           const r=sibling.getBoundingClientRect();
           if(r.width>=c.width*.9 && r.height>0 &&
              r.height<=Math.max(540,c.height+230) &&
-             r.top<c.bottom && r.bottom>c.top-140)markDecoration(sibling);
+             r.top<dockRect.bottom && r.bottom>dockRect.top)markDecoration(sibling);
         }
       }
     }
