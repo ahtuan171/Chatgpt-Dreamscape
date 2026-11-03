@@ -8,6 +8,7 @@ The fast smoke test loads `tests/chatgpt-fixture.html` (a **simulated** ChatGPT 
 - The outer composer **dock** remains transparent for collapsed and expanded composers; the rounded input retains a solid dark surface (no glass composer option)
 - Attachment-style composer reparenting with the **same form element**, 12 newly opaque nested dock wrappers, and a separate decorative black backdrop: all become transparent without touching conversation text (CSS and screenshot-pixel regression)
 - Unlabelled decorative dock backdrops with default pointer events, nested gradient/pseudo-element layers, preserved clickable controls, and restoring backgrounds when Dreamscape is disabled
+- Full-width form wrappers with a nested `data-composer-surface` / `composer-background` input surface and in-flow backdrops; input editing and send control remain usable
 - The Victor, animation and Dreamscape controls are accessible, visible checkboxes; the retired glass setting is no longer available
 - Custom wallpaper import, IndexedDB storage, restore and deletion
 - Saved selections of removed built-in wallpapers safely fall back to Moonlit Castle, without deleting custom uploads

@@ -28,6 +28,9 @@
     const editorSelector='#prompt-textarea,[data-testid="composer-text-input"],[contenteditable="true"][role="textbox"],textarea';
     const candidates=[];
     for(const selector of [
+      '[data-composer-surface="true"]',
+      '#composer-background',
+      '[data-testid="composer-background"]',
       '[data-testid="composer-root"]',
       'form:has(#prompt-textarea)',
       'form:has([data-testid="composer-text-input"])',
@@ -56,7 +59,13 @@
     }
     // Prefer a dock near the bottom if more than one composer is genuinely
     // visible; otherwise use the centered new-chat composer.
-    candidates.sort((a,b)=>b.rect.bottom-a.rect.bottom);
+    candidates.sort((a,b)=>{
+      // A form may wrap the full-width dock; its nested painted surface is
+      // the actual input. Prefer that surface over its containing form.
+      if(a.element.contains(b.element))return 1;
+      if(b.element.contains(a.element))return -1;
+      return b.rect.bottom-a.rect.bottom;
+    });
     return candidates[0]?.element||null;
   }
   function clearDockClasses(){
@@ -105,8 +114,6 @@
       for(const wrapper of [...next]){
         for(const sibling of wrapper.children){
           if(sibling===el||sibling.contains(el)||sibling.matches('script,style'))continue;
-          const style=getComputedStyle(sibling);
-          if(!['absolute','fixed'].includes(style.position))continue;
           if(!decorative(sibling))continue;
           const r=sibling.getBoundingClientRect();
           if(r.width>=c.width*.9 && r.height>0 &&

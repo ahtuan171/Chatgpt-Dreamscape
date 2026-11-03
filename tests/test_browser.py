@@ -497,6 +497,48 @@ def test_attachment_dock_reparent(browser, url, use_mock_storage):
     page.close()
 
 
+def test_nested_composer_surface(browser, url, use_mock_storage):
+    """Full-width form wraps a separate painted input and in-flow backdrop."""
+    page = browser.new_page(viewport={'width':1600,'height':900})
+    if use_mock_storage:
+        page.set_content(FIXTURE)
+        page.evaluate(STORAGE_SHIM)
+    else:
+        page.goto(url)
+    page.evaluate('''() => {
+      const form=document.querySelector('form');
+      document.querySelector('#thread-bottom').style.minHeight='275px';
+      document.querySelector('#thread-bottom-container').style.minHeight='275px';
+      document.querySelector('.outer-dock').style.height='275px';
+      const surface=document.createElement('div');
+      surface.id='composer-background';
+      surface.setAttribute('data-composer-surface','true');
+      surface.style.cssText='width:750px;min-height:245px;background:#1c1c1c;border-radius:21px;padding:22px;position:relative;z-index:1;display:flex;align-items:flex-end';
+      while(form.firstChild)surface.append(form.firstChild);
+      form.removeAttribute('data-testid');
+      form.style.cssText='width:100%;min-height:275px;background:#000;display:flex;justify-content:center;position:relative;padding:0;border:0;border-radius:0';
+      form.append(surface);
+      const layer=document.createElement('div');
+      layer.className='in-flow-backdrop';
+      layer.style.cssText='position:relative;width:100%;height:275px;margin-left:-100%;background:#000;pointer-events:none';
+      layer.innerHTML='<div style="width:100%;height:100%;background:linear-gradient(#000,#000)"></div>';
+      form.append(layer);
+    }''')
+    page.add_script_tag(content=SCRIPT)
+    page.wait_for_function("document.querySelector('[data-composer-surface]').classList.contains('ds-composer')")
+    assert page.locator('form').evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgba(0, 0, 0, 0)'
+    assert page.locator('[data-composer-surface]').evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgb(13, 18, 28)'
+    assert page.locator('.in-flow-backdrop').evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgba(0, 0, 0, 0)'
+    assert page.locator('.in-flow-backdrop > div').evaluate("e=>getComputedStyle(e).backgroundImage") == 'none'
+    assert page.locator('article h1').is_visible()
+    page.locator('#prompt-textarea').fill('Composer remains editable')
+    assert page.locator('#prompt-textarea').inner_text() == 'Composer remains editable'
+    page.locator('[data-composer-surface] button').last.click()
+    page.screenshot(path=str(ROOT/'tests/screenshots/nested-composer-surface.png'))
+    page.close()
+    print('PASS: full-width form transparent; nested painted input, in-flow backdrop, editor and controls preserved')
+
+
 with Server(('127.0.0.1', 0), Handler) as server:
     threading.Thread(target=server.serve_forever, daemon=True).start()
     url = f'http://127.0.0.1:{server.server_address[1]}/tests/chatgpt-fixture.html'
@@ -519,5 +561,6 @@ with Server(('127.0.0.1', 0), Handler) as server:
         run_tests(page, real_storage)
         test_existing_selection_migration(browser, url, not real_storage)
         test_attachment_dock_reparent(browser, url, not real_storage)
+        test_nested_composer_surface(browser, url, not real_storage)
         browser.close()
     server.shutdown()
