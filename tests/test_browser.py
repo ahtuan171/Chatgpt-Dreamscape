@@ -558,6 +558,55 @@ def test_nested_composer_surface(browser, url, use_mock_storage):
     print('PASS: full-width form transparent; nested painted input, in-flow backdrop, editor and controls preserved')
 
 
+def test_transcript_sticky_fade(browser, url, use_mock_storage):
+    """Actual debug DOM: transcript sticky fade is outside composer ancestry."""
+    from io import BytesIO
+    from PIL import Image
+    page = browser.new_page(viewport={'width':1668,'height':378})
+    if use_mock_storage:
+        page.set_content(FIXTURE)
+        page.evaluate(STORAGE_SHIM)
+    else:
+        page.goto(url)
+    page.add_script_tag(content=SCRIPT)
+    page.wait_for_function("document.querySelector('.ds-composer') !== null")
+    reference=Image.open(BytesIO(page.screenshot())).convert('RGB')
+    page.evaluate('''() => {
+      const transcript=document.createElement('div');
+      transcript.className='thread-scroll-container';
+      transcript.style.cssText='position:fixed;left:250px;right:0;bottom:0;height:173px;pointer-events:none';
+      const sticky=document.createElement('div');
+      sticky.className='pointer-events-none sticky bottom-0';
+      sticky.style.cssText='position:sticky;bottom:0;width:100%;height:173px;pointer-events:none';
+      const fade=document.createElement('div');
+      fade.className='background-uNUrfY fade-AcMqqj pointer-events-none absolute z-0 inset-x-0 from-surface';
+      fade.style.cssText='position:absolute;inset:0 0 auto;height:32px;pointer-events:none;background-image:linear-gradient(to top in oklab,rgb(0,0,0) 0%,rgba(0,0,0,0) 100%)';
+      sticky.append(fade);transcript.append(sticky);
+      document.querySelector('#root').append(transcript);
+      const button=document.createElement('button');
+      button.className='diagnostic-scroll-button';button.textContent='Scroll down';
+      button.style.cssText='position:fixed;right:100px;bottom:180px;background:rgb(20,30,40);pointer-events:auto';
+      button.onclick=()=>button.dataset.clicked='yes';transcript.append(button);
+    }''')
+    fade=page.locator('.fade-AcMqqj')
+    assert fade.evaluate('e=>getComputedStyle(e).backgroundImage') == 'none'
+    actual=Image.open(BytesIO(page.screenshot())).convert('RGB')
+    for y in range(205,237):
+        assert actual.getpixel((310,y)) == reference.getpixel((310,y)), ('sticky fade pixel',y)
+    page.locator('.diagnostic-scroll-button').click()
+    assert page.locator('.diagnostic-scroll-button').get_attribute('data-clicked') == 'yes'
+    assert page.locator('.diagnostic-scroll-button').evaluate('e=>getComputedStyle(e).backgroundColor') == 'rgb(20, 30, 40)'
+    page.locator('.ds-launch').click()
+    page.locator('.ds-active-check').uncheck()
+    assert fade.evaluate('e=>getComputedStyle(e).backgroundImage') != 'none'
+    page.locator('.ds-active-check').check()
+    assert fade.evaluate('e=>getComputedStyle(e).backgroundImage') == 'none'
+    page.locator('.ds-launch').click()
+    page.screenshot(path=str(ROOT/'tests/screenshots/transcript-sticky-fade.png'))
+    page.close()
+    print('PASS: actual 32px transcript sticky fade removed (32 pixel rows), scroll button preserved, disable restores gradient')
+
+
 with Server(('127.0.0.1', 0), Handler) as server:
     threading.Thread(target=server.serve_forever, daemon=True).start()
     url = f'http://127.0.0.1:{server.server_address[1]}/tests/chatgpt-fixture.html'
@@ -581,5 +630,6 @@ with Server(('127.0.0.1', 0), Handler) as server:
         test_existing_selection_migration(browser, url, not real_storage)
         test_attachment_dock_reparent(browser, url, not real_storage)
         test_nested_composer_surface(browser, url, not real_storage)
+        test_transcript_sticky_fade(browser, url, not real_storage)
         browser.close()
     server.shutdown()

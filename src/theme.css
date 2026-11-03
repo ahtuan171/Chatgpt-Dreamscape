@@ -52,6 +52,13 @@ html.ds-active #thread-bottom-container::after {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+/* ChatGPT also paints a 32px fade inside the transcript's sticky spacer,
+   in a separate branch from the composer footer. Use structural utility
+   classes from that layer, not generated CSS-module suffixes. */
+html.ds-active .thread-scroll-container .pointer-events-none.sticky.bottom-0 > .pointer-events-none.from-surface {
+  background: transparent !important;
+  background-image: none !important;
+}
 html.ds-active .ds-composer,
 html.ds-active [data-testid="composer-root"] {
   background: #0d121c !important;

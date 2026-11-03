@@ -11,7 +11,7 @@
 
 **ChatGPT Dreamscape** là một userscript mã nguồn mở giúp bạn tùy chỉnh giao diện ChatGPT trên **trình duyệt máy tính** bằng những hình nền giàu cảm xúc và một người bạn pixel nhỏ tên **Victor**.
 
-> **Bản xem trước v0.3.13.** Đây là dự án cộng đồng độc lập, không phải tính năng chính thức của OpenAI. Giao diện ChatGPT có thể thay đổi và ảnh hưởng đến userscript; nếu phát hiện lỗi, hãy [tạo issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues).
+> **Bản xem trước v0.3.14.** Đây là dự án cộng đồng độc lập, không phải tính năng chính thức của OpenAI. Giao diện ChatGPT có thể thay đổi và ảnh hưởng đến userscript; nếu phát hiện lỗi, hãy [tạo issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues).
 
 ### 🖼️ Thư viện hình nền
 
@@ -104,7 +104,7 @@ Mã nguồn ở [`src/`](src/), ảnh ở [`assets/`](assets/), bộ công cụ 
 
 **ChatGPT Dreamscape** is an independent, open-source userscript that brings atmospheric wallpapers and **Victor**, a tiny gray pixel cat, to the **desktop ChatGPT web interface**.
 
-> **Early public preview · v0.3.13.** This is a community customization, not an official OpenAI feature. Changes to ChatGPT's interface may affect compatibility. Please [open an issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues) when something breaks.
+> **Early public preview · v0.3.14.** This is a community customization, not an official OpenAI feature. Changes to ChatGPT's interface may affect compatibility. Please [open an issue](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues) when something breaks.
 
 ### 🖼️ Built-in wallpapers
 
