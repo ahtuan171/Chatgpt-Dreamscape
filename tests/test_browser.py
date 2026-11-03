@@ -451,7 +451,13 @@ def test_attachment_dock_reparent(browser, url, use_mock_storage):
       controls.onclick=()=>controls.dataset.clicked='yes';
       dock.append(controls);
       dock.appendChild(overlay);
-      let node=dock;
+      // Actual ChatGPT footer chain contains boxless React layout wrappers.
+      // Backdrops with pointer-events:none are absent from elementsFromPoint.
+      overlay.style.pointerEvents='none';
+      const contents=document.createElement('div');
+      contents.style.display='contents';
+      dock.append(contents);
+      let node=contents;
       for(let i=0;i<12;i++){
         const inner=document.createElement('div');
         inner.className='nested-dark n'+i;

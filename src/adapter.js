@@ -83,6 +83,11 @@
       let depth=0;
       while(node && depth<18 && node!==document.body && node!==document.documentElement){
         if(node.matches('main,[role="main"],#root,#sidebar,[data-testid="sidebar"]'))break;
+        // display:contents wrappers have no box. Their zero rect must not
+        // terminate discovery of the actual footer/backdrop above them.
+        if(getComputedStyle(node).display==='contents'){
+          node=node.parentElement;depth++;continue;
+        }
         const rect=node.getBoundingClientRect();
         // A real dock can span the full width, but must be near the composer
         // and short enough that it cannot be the whole conversation viewport.
