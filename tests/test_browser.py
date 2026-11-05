@@ -669,6 +669,110 @@ def test_unlabelled_work_composer(browser, url, use_mock_storage):
         page.close()
     print('PASS: unlabelled Work composer at 1024/1334/1920px, expansion, typing, controls, pixel backdrop and theme toggle')
 
+
+def test_conversation_contents_depth(browser, url, use_mock_storage):
+    """User DOM: 20 ancestors (many display:contents) before outer footer.
+
+    Reconstruct the supplied ancestor tag/class sequence; the outer footer and
+    pointer-events:none backdrop represent the paint layers beyond that dump.
+    Transition the same editor from New Chat into a long conversation.
+    """
+    from PIL import Image
+    from io import BytesIO
+    for width,height in [(1680,543),(1174,612),(1334,900)]:
+        page=browser.new_page(viewport={'width':width,'height':height})
+        errors=[]
+        page.on('pageerror',lambda error: errors.append(str(error)))
+        if use_mock_storage:
+            page.set_content(FIXTURE)
+            page.evaluate(STORAGE_SHIM)
+        else:
+            page.goto(url)
+        page.evaluate(r'''() => {
+          const form=document.querySelector('form');
+          const surface=document.createElement('div');
+          surface.className='ComposerLayoutRoot-fixture';
+          surface.style.cssText='width:100%;height:101px;background:#1c1c1c;border-radius:24px;padding:16px;display:flex;align-items:flex-end;position:relative;z-index:1';
+          while(form.firstChild)surface.append(form.firstChild);
+          const landing=document.createElement('div');
+          landing.id='new-chat-landing';
+          landing.style.cssText='position:fixed;left:calc(50% - 260px);top:40%;width:600px';
+          landing.append(surface);
+          document.querySelector('#root').append(landing);
+          document.querySelector('#thread-bottom').remove();
+        }''')
+        page.add_script_tag(content=SCRIPT)
+        page.wait_for_function("document.querySelector('.ComposerLayoutRoot-fixture').classList.contains('ds-composer')")
+        page.evaluate(r'''() => {
+          const surface=document.querySelector('.ComposerLayoutRoot-fixture');
+          // Sequence from the user's actual parents[1..19], without ds classes.
+          const ancestors=[
+            ['fieldset','col-start-1 row-start-1 m-0 min-w-0 border-0 p-0'],
+            ['div','grid min-w-0'],['div','ComposerModeSurface-fixture'],
+            ['div','relative w-full flex-col gap-2 flex'],['div','contents'],
+            ['form','relative flex flex-col gap-2'],['div','flex flex-col'],
+            ['div','relative flex w-full min-w-0 flex-col'],
+            ['div','group/imagegen-composer contents'],['div','contents'],
+            ['div','shrink-0'],['div','flex flex-col justify-end'],
+            ['div','contents'],['div','contents'],['div','contents'],
+            ['div','contents'],['div','hidden only:contents'],['div','contents'],['div','contents']
+          ];
+          let tree=surface;
+          for(const [tag,classes] of ancestors){
+            const wrapper=document.createElement(tag);
+            wrapper.className=classes;
+            wrapper.style.cssText=classes.includes('contents')?'display:contents':'width:100%;height:101px;margin:0;padding:0;border:0;background:transparent;border-radius:0';
+            wrapper.append(tree);tree=wrapper;
+          }
+          const footer=document.createElement('div');
+          footer.className='observed-conversation-footer';
+          footer.style.cssText='position:fixed;left:250px;right:0;bottom:0;height:125px;background:#000;display:flex;justify-content:center;align-items:flex-start';
+          const backdrop=document.createElement('div');
+          backdrop.className='observed-conversation-backdrop';
+          backdrop.style.cssText='position:absolute;inset:0;background:#000;pointer-events:none';
+          const column=document.createElement('div');
+          column.style.cssText='width:min(768px,80%);position:relative';
+          column.append(tree);footer.append(backdrop,column);
+          document.querySelector('#new-chat-landing').remove();
+          document.querySelector('#root').append(footer);
+          const article=document.querySelector('article');
+          article.style.cssText='height:2200px;background:rgba(30,40,50,.25)';
+          article.setAttribute('data-message-author-role','assistant');
+        }''')
+        page.wait_for_timeout(200)
+        assert page.locator('.observed-conversation-footer').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgba(0, 0, 0, 0)', 'deep footer remains black'
+        assert page.locator('.observed-conversation-backdrop').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgba(0, 0, 0, 0)'
+        assert page.locator('article').evaluate("e=>!e.classList.contains('ds-dock')&&getComputedStyle(e).backgroundColor==='rgba(30, 40, 50, 0.25)'")
+        assert page.locator('main').evaluate("e=>!e.classList.contains('ds-dock')")
+        point=(260,height-60)
+        actual=Image.open(BytesIO(page.screenshot())).convert('RGB').getpixel(point)
+        reference_style=page.add_style_tag(content='.observed-conversation-footer,.observed-conversation-backdrop {background:transparent!important}')
+        reference=Image.open(BytesIO(page.screenshot())).convert('RGB').getpixel(point)
+        reference_style.evaluate('e=>e.remove()')
+        assert actual==reference, (width,actual,reference)
+        page.locator('#prompt-textarea').fill('Conversation draft remains editable')
+        page.locator('.effort-control').click()
+        page.locator('.ds-launch').click()
+        page.locator('.ds-active-check').uncheck()
+        assert page.locator('.observed-conversation-footer').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgb(0, 0, 0)'
+        page.locator('.ds-active-check').check()
+        page.locator('.ds-launch').click()
+        page.screenshot(path=str(ROOT/f'tests/screenshots/conversation-depth-{width}.png'))
+        # Return to New Chat; detached footer classes must be removed.
+        page.evaluate(r'''() => {
+          const surface=document.querySelector('.ComposerLayoutRoot-fixture');
+          window.__oldFooter=document.querySelector('.observed-conversation-footer');
+          const landing=document.createElement('div');
+          landing.style.cssText='position:fixed;left:35%;top:40%;width:600px';
+          landing.append(surface);document.querySelector('#root').append(landing);
+          window.__oldFooter.remove();
+        }''')
+        page.wait_for_function("!window.__oldFooter.classList.contains('ds-dock')")
+        assert page.locator('.ComposerLayoutRoot-fixture').is_visible()
+        assert not errors, errors
+        page.close()
+    print('PASS: user 20-ancestor DOM, New Chat → long conversation → New Chat, footer pixels, controls and toggle at 3 viewport sizes')
+
 with Server(('127.0.0.1', 0), Handler) as server:
     threading.Thread(target=server.serve_forever, daemon=True).start()
     url = f'http://127.0.0.1:{server.server_address[1]}/tests/chatgpt-fixture.html'
@@ -694,5 +798,6 @@ with Server(('127.0.0.1', 0), Handler) as server:
         test_nested_composer_surface(browser, url, not real_storage)
         test_unlabelled_work_composer(browser, url, not real_storage)
         test_transcript_sticky_fade(browser, url, not real_storage)
+        test_conversation_contents_depth(browser, url, not real_storage)
         browser.close()
     server.shutdown()

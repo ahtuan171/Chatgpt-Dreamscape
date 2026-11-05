@@ -100,12 +100,17 @@
       const c=el.getBoundingClientRect();
       let node=el.parentElement;
       let depth=0;
-      while(node && depth<18 && node!==document.body && node!==document.documentElement){
+      let visited=0;
+      while(node && depth<18 && visited<128 && node!==document.body && node!==document.documentElement){
+        visited++;
         if(node.matches('main,[role="main"],#root,#sidebar,[data-testid="sidebar"]'))break;
         // display:contents wrappers have no box. Their zero rect must not
-        // terminate discovery of the actual footer/backdrop above them.
+        // terminate discovery or consume the rendered-ancestor budget. Actual
+        // conversation DOM can have more than 20 ancestors, mostly contents
+        // wrappers, before reaching the footer (unlike the New Chat landing).
+        // Keep a separate hard traversal cap as well as the geometry guards.
         if(getComputedStyle(node).display==='contents'){
-          node=node.parentElement;depth++;continue;
+          node=node.parentElement;continue;
         }
         const rect=node.getBoundingClientRect();
         // A real dock can span the full width, but must be near the composer
