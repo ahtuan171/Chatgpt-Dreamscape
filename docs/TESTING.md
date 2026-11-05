@@ -2,6 +2,7 @@
 
 The fast smoke test loads `tests/chatgpt-fixture.html` (a **simulated** ChatGPT DOM) and injects the bundled userscript. It checks:
 
+- User-reported conversation ancestor chain with 20 layers, most `display: contents`: New Chat → long conversation → New Chat, pointer-events-none backdrop pixels, unchanged transcript, controls and theme disable/enable at 1680×543, 1174×612 and 1334×900. The original 0.3.15 build fails this regression because boxless wrappers consume its 18-ancestor limit. Outer paint layers are reconstructed; this is not a live authenticated-session test.
 - Conversation and sidebar remain visible
 - All five built-in wallpapers switch, display previews, and preserve dimming/position controls
 - Victor is visible near the right corner of the composer, an additional 15% larger (74 × 59 CSS px), moves left then turns to face right within an 80px patrol, and can be disabled
