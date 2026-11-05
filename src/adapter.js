@@ -42,6 +42,25 @@
         if(!candidates.some(c=>c.element===el))candidates.push({element:el,rect});
       }
     }
+    // Surface IDs differ between ChatGPT builds (including Work Mode). Even
+    // when a known form exists, inspect the editor's ancestors for the actual
+    // rounded input surface. Otherwise we style the full-width form and leave
+    // its opaque children painted underneath the input.
+    for(const editor of document.querySelectorAll(editorSelector)){
+      if(!visibleEditable(editor))continue;
+      let node=editor.parentElement;
+      for(let depth=0;node&&depth<18;node=node.parentElement,depth++){
+        if(node.matches('#root,main,[role="main"],body'))break;
+        const rect=visibleRect(node);
+        if(!rect||!node.querySelector('button,[role="button"]'))continue;
+        const style=getComputedStyle(node);
+        const radius=Math.max(...['borderTopLeftRadius','borderTopRightRadius',
+          'borderBottomLeftRadius','borderBottomRightRadius'].map(k=>parseFloat(style[k])||0));
+        if(radius<12)continue;
+        if(!candidates.some(c=>c.element===node))candidates.push({element:node,rect});
+        break;
+      }
+    }
     // The New Chat landing can use a div-based composer with no form/testid.
     // Find a compact wrapper around a visible textbox AND its controls.
     if(!candidates.length){

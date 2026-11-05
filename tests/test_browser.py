@@ -607,6 +607,68 @@ def test_transcript_sticky_fade(browser, url, use_mock_storage):
     print('PASS: actual 32px transcript sticky fade removed (32 pixel rows), scroll button preserved, disable restores gradient')
 
 
+
+def test_unlabelled_work_composer(browser, url, use_mock_storage):
+    """A known form is only a full-width wrapper; real surface has no stable ID."""
+    for width in [1334, 1024, 1920]:
+        page=browser.new_page(viewport={'width':width,'height':900})
+        errors=[]
+        page.on('pageerror', lambda error: errors.append(str(error)))
+        if use_mock_storage:
+            page.set_content(FIXTURE)
+            page.evaluate(STORAGE_SHIM)
+        else:
+            page.goto(url)
+        page.evaluate(r'''() => {
+          const form=document.querySelector('form');
+          form.style.cssText='width:100%;background:#000;padding:0;border-radius:0;display:flex;justify-content:center;position:relative';
+          const surface=document.createElement('section');
+          surface.className='work-input-surface';
+          surface.style.cssText='width:70%;min-height:104px;background:#1c1c1c;border-radius:26px;padding:18px;position:relative;z-index:1;display:flex;align-items:flex-end';
+          while(form.firstChild)surface.append(form.firstChild);
+          form.append(surface);
+          const backdrop=document.createElement('div');
+          backdrop.className='work-black-backdrop';
+          backdrop.style.cssText='position:absolute;inset:0;background:#000';
+          form.prepend(backdrop);
+        }''')
+        page.add_script_tag(content=SCRIPT)
+        page.wait_for_function("document.querySelector('.work-input-surface').classList.contains('ds-composer')")
+        for selector in ['form','#thread-bottom','#thread-bottom-container','.outer-dock','.work-black-backdrop']:
+            assert page.locator(selector).evaluate('e=>getComputedStyle(e).backgroundColor')=='rgba(0, 0, 0, 0)', selector
+        assert page.locator('form').evaluate("e=>!e.classList.contains('ds-composer')")
+        assert page.locator('.work-input-surface').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgb(13, 18, 28)'
+        page.locator('#prompt-textarea').fill('Multiline writing\nSecond line\nThird line')
+        page.locator('.work-input-surface').evaluate("e=>e.style.minHeight='280px'")
+        page.locator('.outer-dock').evaluate("e=>e.style.height='320px'")
+        page.wait_for_timeout(150)
+        assert page.locator('form').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgba(0, 0, 0, 0)'
+        page.locator('.effort-control').click()
+        assert page.locator('article h1').is_visible()
+        assert page.locator('#sidebar').is_visible()
+        # Compare outside-input pixels with the same region when native dock
+        # backgrounds are explicitly removed. This catches opaque child layers.
+        from PIL import Image
+        from io import BytesIO
+        box=page.locator('form').bounding_box()
+        point=(int(box['x']+5), int(box['y']+box['height']/2))
+        actual=Image.open(BytesIO(page.screenshot())).convert('RGB').getpixel(point)
+        reference_style=page.add_style_tag(content='form,.outer-dock,#thread-bottom,#thread-bottom-container,.work-black-backdrop {background:transparent!important}')
+        reference=Image.open(BytesIO(page.screenshot())).convert('RGB').getpixel(point)
+        reference_style.evaluate('e=>e.remove()')
+        assert actual==reference, (width, actual, reference)
+        page.locator('.ds-launch').click()
+        page.locator('.ds-active-check').uncheck()
+        assert page.locator('form').evaluate('e=>getComputedStyle(e).borderRadius')=='0px'
+        assert page.locator('form').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgb(0, 0, 0)'
+        assert page.locator('.work-input-surface').evaluate('e=>getComputedStyle(e).backgroundColor')=='rgb(28, 28, 28)'
+        page.locator('.ds-active-check').check()
+        page.locator('.ds-launch').click()
+        page.screenshot(path=str(ROOT/f'tests/screenshots/work-composer-{width}.png'))
+        assert not errors, errors
+        page.close()
+    print('PASS: unlabelled Work composer at 1024/1334/1920px, expansion, typing, controls, pixel backdrop and theme toggle')
+
 with Server(('127.0.0.1', 0), Handler) as server:
     threading.Thread(target=server.serve_forever, daemon=True).start()
     url = f'http://127.0.0.1:{server.server_address[1]}/tests/chatgpt-fixture.html'
@@ -630,6 +692,7 @@ with Server(('127.0.0.1', 0), Handler) as server:
         test_existing_selection_migration(browser, url, not real_storage)
         test_attachment_dock_reparent(browser, url, not real_storage)
         test_nested_composer_surface(browser, url, not real_storage)
+        test_unlabelled_work_composer(browser, url, not real_storage)
         test_transcript_sticky_fade(browser, url, not real_storage)
         browser.close()
     server.shutdown()
