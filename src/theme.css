@@ -59,8 +59,7 @@ html.ds-active .thread-scroll-container .pointer-events-none.sticky.bottom-0 > .
   background: transparent !important;
   background-image: none !important;
 }
-html.ds-active .ds-composer,
-html.ds-active [data-testid="composer-root"] {
+html.ds-active .ds-composer {
   background: #0d121c !important;
   background-image: none !important;
   color: #f1f3fa !important;
