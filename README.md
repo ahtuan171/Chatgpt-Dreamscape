@@ -50,9 +50,17 @@ Nếu trình duyệt tải tệp `.user.js` xuống thay vì mở trang cài đ�
 
 ### 🧭 Tương thích giao diện Chat/Work mới (11/2026)
 
-Dreamscape v0.3.17 bổ sung nhận diện các lớp nền toàn màn hình của giao diện Chat/Work mới. Thay vì làm trong suốt mọi phần tử, script chỉ chọn các vùng nội dung có kích thước phù hợp, giữ nguyên nền ô nhập, thanh điều hướng, nút bấm và sidebar. Khi tắt Dreamscape, kiểu hiển thị gốc được khôi phục. Victor và các hình nền đã lưu vẫn hoạt động như trước.
+**v0.3.17 (21/11/2026)** bổ sung nhận diện các lớp nền lớn của vùng nội dung Chat/Work. Script cố gắng cho hình nền xuất hiện phía sau phần nội dung nhưng **giữ nền của ô nhập**, các nút bấm, thanh Chat/Work và sidebar. Victor cùng những hình nền đã lưu không bị thay đổi.
 
-**Lưu ý:** bản sửa được kiểm thử với giao diện mô phỏng theo ảnh chụp ngày 21/11/2026; chưa xác nhận trên DOM của phiên đăng nhập thực tế ở mọi trình duyệt và mọi trạng thái Work. Nếu vùng giữa vẫn đen, hãy gửi thêm ảnh và DOM rút gọn của phần tử che nền trong issue.
+**Đã kiểm thử:** GitHub Actions build, kiểm tra cú pháp và bộ regression trên Chromium mô phỏng đều PASS. Bố cục mới được dựng lại theo ảnh chụp, **không phải** DOM từ phiên ChatGPT đang đăng nhập. Work và các giao diện thực tế vẫn cần kiểm tra thủ công. Xem [tương thích và giới hạn](docs/COMPATIBILITY.md), [kiểm thử](docs/TESTING.md) và [lịch sử cập nhật](CHANGELOG.md).
+
+### 🔄 Cập nhật từ phiên bản cũ
+
+1. Trong Tampermonkey / Violentmonkey, kiểm tra script đang ở **0.3.17**. Nếu chưa, mở lại [link cài đặt trên main](https://github.com/ahtuan171/Chatgpt-Dreamscape/raw/refs/heads/main/dist/dreamscape.user.js) và chọn Update / Install.
+2. Chỉ bật **một** script Dreamscape, rồi tải lại `chatgpt.com`.
+3. Mở menu **☾** để kiểm tra hình nền và Victor. Cập nhật không chủ động xóa thiết lập cũ; việc xóa dữ liệu trang web có thể làm mất ảnh tự nhập.
+
+Nếu **menu ☾ hiện nhưng vùng giữa còn đen**, kiểm tra Dreamscape đã bật, thử Chat mới / hội thoại đã có / Work (nếu có), rồi tải lại. Báo lỗi qua [Issues](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues) với trình duyệt, trạng thái trang và ảnh **đã che thông tin riêng tư**; không chia sẻ nội dung hội thoại, cookie hay bản xuất DOM thô.
 
 ### 🔧 Khắc phục lỗi: Không thấy Dreamscape
 
@@ -146,6 +154,20 @@ You can also import your own wallpapers from the **☾** menu.
 If the browser downloads the `.user.js` instead of showing an installer, import that file through your userscript manager. Some Chromium-based browsers require enabling **Allow User Scripts** in extension settings.
 
 **Compatibility targets:** Chrome, Firefox, Edge and Brave on Windows, macOS and Linux, with Chrome and Firefox receiving priority testing. Mobile browsers and desktop-app integration are out of scope. Broad desktop compatibility is a goal, not a guarantee for every release.
+
+### 🧭 November 2026 Chat/Work UI support
+
+**v0.3.17 (21 November 2026)** detects large content-stage backdrops in the new Chat/Work layout. It aims to reveal the wallpaper **behind the main content** without making the composer, controls, Chat/Work switcher or sidebar transparent. Victor and local wallpapers are unchanged.
+
+**Validation:** the build, JavaScript syntax check and simulated Chromium regressions passed. The new fixture is **reconstructed from a screenshot**, not captured from a signed-in ChatGPT session; live Chat and Work states still need manual checks. See [Compatibility & limitations](docs/COMPATIBILITY.md), [Testing](docs/TESTING.md) and [Changelog](CHANGELOG.md).
+
+### 🔄 Upgrade from an older version
+
+1. Check that Tampermonkey / Violentmonkey shows version **0.3.17**. Otherwise open the [official install link on main](https://github.com/ahtuan171/Chatgpt-Dreamscape/raw/refs/heads/main/dist/dreamscape.user.js) again and select Update / Install.
+2. Keep only **one** Dreamscape script enabled and reload `chatgpt.com`.
+3. Use **☾** to verify your wallpaper and Victor. The update does not deliberately clear preferences; clearing site data can still remove personal images.
+
+If the **☾ menu works but the center is still black**, check that Dreamscape is enabled and compare New Chat, an existing conversation, and Work when available. Report persistent issues via [Issues](https://github.com/ahtuan171/Chatgpt-Dreamscape/issues) with browser, page state and a **redacted** screenshot. Never share message content, tokens, cookies or full page DOM.
 
 ### 🔧 Troubleshooting: Dreamscape not showing
 
