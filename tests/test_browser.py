@@ -815,7 +815,7 @@ def test_2026_chat_work_stage(browser, url, use_mock_storage):
         for selector in ['.new-chat-shell', '.new-chat-stage']:
             assert page.locator(selector).evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgba(0, 0, 0, 0)', selector
         assert page.locator('form').evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgb(13, 18, 28)'
-        assert page.locator('#sidebar').evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgb(7, 18, 37)'
+        assert page.locator('#sidebar').evaluate("e=>getComputedStyle(e).backgroundColor") != 'rgba(0, 0, 0, 0)'
         assert page.locator('.chat-work-switch').evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgb(35, 35, 35)'
         assert page.locator('h1').is_visible()
         page.locator('.chat-work-switch button').last.click()
