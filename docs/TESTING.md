@@ -1,5 +1,9 @@
 # Testing Dreamscape
 
+## Release scope — v0.3.17
+
+GitHub Actions for [PR #4](https://github.com/ahtuan171/Chatgpt-Dreamscape/pull/4) passed on 21 November 2026. These are **simulated browser tests**, not a guarantee that Chat/Work is compatible with all signed-in accounts.
+
 The November 2026 Chat/Work stage regression simulates a full-height, multiply painted layout with a compact left rail and a Chat/Work switcher, verifying that stage backgrounds become transparent while the composer, controls and rail remain painted, and toggling Dreamscape restores native backgrounds. The geometry fixture is inferred from the user screenshot; it is not a captured authenticated ChatGPT DOM.
 
 The fast smoke test loads `tests/chatgpt-fixture.html` (a **simulated** ChatGPT DOM) and injects the bundled userscript. It checks:
@@ -31,7 +35,20 @@ python tests/test_browser.py
 
 Tests try a loopback fixture server (real IndexedDB/localStorage). Restricted sandboxes may prohibit browser navigation. In that case tests use an `about:blank` fixture with in-memory storage shims; the report clearly distinguishes simulated storage checks from native IndexedDB persistence.
 
-**Before a release**, manually verify the userscript in authenticated desktop Chrome and Firefox (and Edge/Brave when practical), including a long conversation, collapsed/expanded sidebar, empty chat, sending a message, composer resizing, wallpaper upload, page reload, and disabling the script. These cannot be guaranteed from a fixture alone.
+## Manual checklist before a release
+
+Manually check the installed userscript on desktop Chrome and Firefox when possible. Never put ChatGPT credentials into automated tests.
+
+- [ ] **New Chat:** wallpaper shows behind the greeting; Chat/Work switcher and compact rail stay legible.
+- [ ] **Existing conversation:** wallpaper appears around transcript; no black dock/fade; text remains readable.
+- [ ] **Work:** when available, the Work UI, controls, forms, overlays and dialogs remain functional.
+- [ ] **Composer:** typing, sending, effort control, attachments and multiline expansion all work; the input retains an opaque background.
+- [ ] **Navigation and viewport:** switch chats, resize near 1024 and 1676 pixels, toggle sidebar and refresh.
+- [ ] **Theme:** disable Dreamscape to restore the native UI; re-enable to reveal the wallpaper.
+- [ ] **Persistence:** switch, dim and reposition wallpapers; test custom upload and reload without losing preferences.
+- [ ] **Accessibility/privacy:** Victor does not cover controls, reduced-motion behavior works, and reports contain no private chat content.
+
+These manual checks **cannot be guaranteed** by fixture tests. For safe diagnostics and supported scope, see [Compatibility](COMPATIBILITY.md).
 
 ### Wallpaper readability and licensing
 

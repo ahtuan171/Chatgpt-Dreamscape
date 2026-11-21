@@ -10,3 +10,9 @@ Dreamscape only targets the desktop web interface at `chatgpt.com`. The userscri
 To report a vulnerability, contact the maintainer privately through GitHub rather than opening a public issue with exploitation instructions.
 
 **Important:** Browser extensions/userscripts are privileged in the page context. Review the source, use a trusted userscript manager and install updates from the official repository only. Dreamscape is community-maintained and unaffiliated with OpenAI.
+
+## UI bug reports
+
+For an opaque background or broken layout, include browser/version, operating system, whether it is New Chat / existing chat / Work, viewport size, and a **redacted** screenshot. Never share a full DOM export or page HTML because it can include private chats and account data.
+
+The DOM adapter checks structure, visibility and geometry to locate layout surfaces; Victor reacts to typing activity. This visual behavior is not intended to read, transmit or analyze message contents.
