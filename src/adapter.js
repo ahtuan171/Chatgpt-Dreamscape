@@ -4,6 +4,7 @@
   let resizeObserver=null;
   let queued=false;
   let activeDockNodes=[];
+  let activeStageNodes=[];
   let resizeListener=null;
   function getComposer(){
     // ChatGPT may render a centered composer on New Chat and a fixed dock in a
@@ -157,6 +158,56 @@
     for(const e of next)if(!previous.has(e))e.classList.add('ds-dock');
     activeDockNodes=[...next];
   }
+
+  // ChatGPT's 2026 Chat/Work shell introduces full-height painted panes that
+  // are neither #root nor main. Discover only screen-sized ancestors of the
+  // visible composer/reading region; preserve small controls and the side rail.
+  function clearStageClasses(){
+    for(const node of activeStageNodes)node.classList.remove('ds-stage');
+    activeStageNodes=[];
+  }
+  function markStage(el){
+    const next=new Set();
+    if(el){
+      const seeds=[el,...document.querySelectorAll(
+        'main,[role="main"],#thread,[data-testid="conversation-turns"],[data-testid="chat-scroll-container"],.thread-scroll-container')];
+      const minWidth=Math.max(300,innerWidth*.48);
+      const stageSized=node=>{
+        const r=node.getBoundingClientRect();
+        return r.width>=minWidth && r.height>=innerHeight*.55 &&
+          r.top<=innerHeight*.25 && r.bottom>=innerHeight*.76 &&
+          r.left<innerWidth*.6 && r.right>innerWidth*.52;
+      };
+      for(const seed of new Set(seeds)){
+        if(!seed.isConnected||seed.closest('#dreamscape-app,[role="dialog"],[role="menu"]'))continue;
+        let node=seed;
+        let visited=0;
+        while(node && visited++<96 && node!==document.body && node!==document.documentElement){
+          // Do not traverse through navigation or popup portals.
+          if(node.matches('#sidebar,[data-testid="sidebar"],aside,nav,header,[role="dialog"],[role="menu"],#dreamscape-app'))break;
+          const style=getComputedStyle(node);
+          if(style.display!=='none'&&style.display!=='contents'&&
+             style.visibility!=='hidden'&&stageSized(node))next.add(node);
+          node=node.parentElement;
+        }
+      }
+      // A full-viewport decorative backdrop may be a sibling instead of an
+      // ancestor. Only touch truly empty, equally-sized panes without controls.
+      for(const stage of [...next]){
+        for(const child of stage.children){
+          if(next.has(child)||child===el||child.contains(el)||
+             child.matches('nav,header,aside,[role="dialog"],[role="menu"],#dreamscape-app'))continue;
+          if(child.textContent.trim()||
+             child.querySelector('button,a,input,textarea,select,iframe,canvas,video,[role="button"],[role="textbox"],[contenteditable],article,nav,header,aside'))continue;
+          if(stageSized(child))next.add(child);
+        }
+      }
+    }
+    const previous=new Set(activeStageNodes);
+    for(const node of previous)if(!next.has(node))node.classList.remove('ds-stage');
+    for(const node of next)if(!previous.has(node))node.classList.add('ds-stage');
+    activeStageNodes=[...next];
+  }
   function syncComposer(){
     queued=false;
     const next=getComposer();
@@ -169,6 +220,7 @@
     // Expansion/reparenting can change opaque wrappers while keeping the same
     // form element, so rediscover dock ancestors on every scheduled sync.
     markDock(composer);
+    markStage(composer);
     positionVictor();
   }
   function scheduleSync(){if(queued)return;queued=true;requestAnimationFrame(syncComposer);}
@@ -190,6 +242,6 @@
     scheduleSync();
   }
   function stopAdapter(){
-    observer?.disconnect();resizeObserver?.disconnect();clearDockClasses();
+    observer?.disconnect();resizeObserver?.disconnect();clearDockClasses();clearStageClasses();
     composer?.classList.remove('ds-composer');composer=null;
   }

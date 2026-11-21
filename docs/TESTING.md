@@ -1,5 +1,7 @@
 # Testing Dreamscape
 
+The November 2026 Chat/Work stage regression simulates a full-height, multiply painted layout with a compact left rail and a Chat/Work switcher, verifying that stage backgrounds become transparent while the composer, controls and rail remain painted, and toggling Dreamscape restores native backgrounds. The geometry fixture is inferred from the user screenshot; it is not a captured authenticated ChatGPT DOM.
+
 The fast smoke test loads `tests/chatgpt-fixture.html` (a **simulated** ChatGPT DOM) and injects the bundled userscript. It checks:
 
 - User-reported conversation ancestor chain with 20 layers, most `display: contents`: New Chat → long conversation → New Chat, pointer-events-none backdrop pixels, unchanged transcript, controls and theme disable/enable at 1680×543, 1174×612 and 1334×900. The original 0.3.15 build fails this regression because boxless wrappers consume its 18-ancestor limit. Outer paint layers are reconstructed; this is not a live authenticated-session test.
