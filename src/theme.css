@@ -28,6 +28,15 @@ html.ds-active #sidebar,
 html.ds-active [data-testid="sidebar"] {
   background-color: rgba(7, 12, 24, .98) !important;
 }
+/* 2026 Chat/Work layout: the full-height stage may be an opaque React
+   wrapper without stable IDs. Only geometry-verified stage panes get this
+   class; interactive cards, switches, sidebar and composer keep their paint. */
+html.ds-active .ds-stage,
+html.ds-active .ds-stage::before,
+html.ds-active .ds-stage::after {
+  background-color: transparent !important;
+  background-image: none !important;
+}
 /* Remove opaque outer dock layers without changing the conversation or sidebar. */
 html.ds-active .ds-dock,
 html.ds-active #thread-bottom,

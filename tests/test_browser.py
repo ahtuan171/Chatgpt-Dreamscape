@@ -773,6 +773,79 @@ def test_conversation_contents_depth(browser, url, use_mock_storage):
         page.close()
     print('PASS: user 20-ancestor DOM, New Chat → long conversation → New Chat, footer pixels, controls and toggle at 3 viewport sizes')
 
+
+def test_2026_chat_work_stage(browser, url, use_mock_storage):
+    """Screenshot-derived 2026 layout: new opaque, full-height nested chat panes."""
+    for width in [1676, 1024]:
+        page = browser.new_page(viewport={'width': width, 'height': 886})
+        errors = []
+        page.on('pageerror', lambda e: errors.append(str(e)))
+        if use_mock_storage:
+            page.set_content(FIXTURE)
+            page.evaluate(STORAGE_SHIM)
+        else:
+            page.goto(url)
+        page.evaluate(r'''() => {
+          const main = document.querySelector('main');
+          const form = document.querySelector('form');
+          const rail = document.querySelector('#sidebar');
+          rail.style.cssText='position:fixed;left:0;top:0;bottom:0;width:55px;background:rgb(7,18,37);z-index:5';
+          document.querySelector('#thread-bottom').remove();
+          main.style.cssText='margin-left:55px;padding:0;min-height:100vh;background:#0c0c0c';
+          main.replaceChildren();
+          const shell = document.createElement('div');
+          shell.className='new-chat-shell';
+          shell.style.cssText='min-height:100vh;width:100%;background:#070707;position:relative';
+          const inner = document.createElement('div');
+          inner.className='new-chat-stage';
+          inner.style.cssText='min-height:100vh;width:100%;background:#090909;display:flex;flex-direction:column;align-items:center;justify-content:center';
+          const tabs=document.createElement('nav');
+          tabs.className='chat-work-switch';
+          tabs.style.cssText='position:absolute;top:5px;left:45%;background:rgb(35,35,35);border-radius:30px;z-index:2';
+          tabs.innerHTML='<button type="button">Chat</button><button type="button">Work</button>';
+          inner.append(tabs);
+          const heading=document.createElement('h1');
+          heading.textContent="What's on your mind today?";
+          inner.append(heading);
+          form.style.cssText='width:min(750px,85%);min-height:118px;background:#111927;border-radius:21px;padding:18px;display:flex;align-items:flex-end';
+          inner.append(form);shell.append(inner);main.append(shell);
+        }''')
+        page.add_script_tag(content=SCRIPT)
+        page.wait_for_function("() => document.querySelector('.new-chat-stage')?.classList.contains('ds-stage')")
+        for selector in ['.new-chat-shell', '.new-chat-stage']:
+            assert page.locator(selector).evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgba(0, 0, 0, 0)', selector
+        assert page.locator('form').evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgb(13, 18, 28)'
+        assert page.locator('#sidebar').evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgb(7, 18, 37)'
+        assert page.locator('.chat-work-switch').evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgb(35, 35, 35)'
+        assert page.locator('h1').is_visible()
+        page.locator('.chat-work-switch button').last.click()
+        assert page.locator('#ds-victor').is_visible()
+        page.locator('.ds-launch').click()
+        page.locator('.ds-active-check').uncheck()
+        assert page.locator('.new-chat-stage').evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgb(9, 9, 9)'
+        page.locator('.ds-active-check').check()
+        assert page.locator('.new-chat-stage').evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgba(0, 0, 0, 0)'
+        # Simulate SPA navigation: reparent the same editor and discard prior stage.
+        page.evaluate(r'''() => {
+          const previous=document.querySelector('.new-chat-shell');
+          const main=document.querySelector('main');
+          const form=previous.querySelector('form');
+          const next=document.createElement('div');
+          next.className='conversation-stage';
+          next.style.cssText='min-height:100vh;width:100%;background:#050505;display:flex;align-items:center;justify-content:center';
+          next.append(form);
+          main.append(next);
+          window.__retiredStage=previous;
+          previous.remove();
+        }''')
+        page.wait_for_function("() => document.querySelector('.conversation-stage')?.classList.contains('ds-stage')")
+        assert page.locator('.conversation-stage').evaluate("e=>getComputedStyle(e).backgroundColor") == 'rgba(0, 0, 0, 0)'
+        assert page.evaluate("!window.__retiredStage.classList.contains('ds-stage')")
+        assert page.locator('form [contenteditable="true"]').is_visible()
+        assert not errors, errors
+        page.close()
+    print('PASS: 2026 Chat/Work screenshot-inspired stage at 1024/1676px, rail, tabs, SPA and theme toggle')
+
 with Server(('127.0.0.1', 0), Handler) as server:
     threading.Thread(target=server.serve_forever, daemon=True).start()
     url = f'http://127.0.0.1:{server.server_address[1]}/tests/chatgpt-fixture.html'
@@ -799,5 +872,6 @@ with Server(('127.0.0.1', 0), Handler) as server:
         test_unlabelled_work_composer(browser, url, not real_storage)
         test_transcript_sticky_fade(browser, url, not real_storage)
         test_conversation_contents_depth(browser, url, not real_storage)
+        test_2026_chat_work_stage(browser, url, not real_storage)
         browser.close()
     server.shutdown()
